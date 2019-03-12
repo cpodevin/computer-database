@@ -26,6 +26,11 @@ public class Requester {
 		}	
 	}
 	
+	public Connection getConn() {
+		return conn;
+	}
+	
+	
 	public List<String> requestComputers() throws SQLException  {
 		
 		query = "SELECT * FROM company;";		

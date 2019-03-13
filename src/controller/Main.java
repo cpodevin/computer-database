@@ -8,7 +8,7 @@ import model.Computer;
 
 public class Main {
 	public static void main(String ... args) {
-		System.out.println("Hello World");
+		/* System.out.println("Hello World");
 		Displayer displayer = new Displayer();
 		displayer.printCompanyList();
 		System.out.println("");
@@ -24,5 +24,10 @@ public class Main {
 		System.out.println("");
 		test = new Computer(578,"IDC");
 		//displayer.computerDeletion(test);
+		*/
+		
+		CLI cli = new CLI();
+		cli.run();
+		
 	}
 }

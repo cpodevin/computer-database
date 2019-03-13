@@ -11,8 +11,14 @@ import model.Company;
 
 public class CompanyDAO extends DAO<Company> {
 
-	public CompanyDAO(Connection conn) {
+	private final static CompanyDAO myInstance = new CompanyDAO(DAOConnection.getConn());
+	
+	private CompanyDAO(Connection conn) {
 		super(conn);
+	}
+	
+	public static CompanyDAO getInstance() {
+		return myInstance;
 	}
 	
 	public boolean create(Company company) {
@@ -41,7 +47,7 @@ public class CompanyDAO extends DAO<Company> {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		return new Company();
+		return null;
 	}
 	
 	public List<Company> list() {

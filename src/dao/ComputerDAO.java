@@ -13,8 +13,14 @@ import model.Computer;
 
 public class ComputerDAO extends DAO<Computer> {
 
-	public ComputerDAO(Connection conn) {
+	private final static ComputerDAO myInstance = new ComputerDAO(DAOConnection.getConn());
+	
+	private ComputerDAO(Connection conn) {
 		super(conn);
+	}
+	
+	public static ComputerDAO getInstance() {
+		return myInstance;
 	}
 	
 	public boolean create(Computer computer) {
@@ -88,14 +94,14 @@ public class ComputerDAO extends DAO<Computer> {
 			statement.setInt(1, id);
 			result = statement.executeQuery();
 			if (result.next()) {
-				CompanyDAO dao = new CompanyDAO(conn);
+				CompanyDAO dao = DAOFactory.getInstance().getCompanyDAO();
 				Company company = dao.find(result.getInt("company_id"));;
 				return new Computer(result.getInt("id"), result.getString("name"), result.getTimestamp("introduced"), result.getTimestamp("discontinued"), company);
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		return new Computer();
+		return null;
 	}
 	
 	public List<Computer> list() {

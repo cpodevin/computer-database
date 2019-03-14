@@ -1,17 +1,11 @@
 package dao;
 
-import java.sql.Connection;
 
 public class DAOFactory {
 
 	private final static DAOFactory myInstance = new DAOFactory();
-	private Connection conn;
-	private ComputerDAO myComputerDAO;
-	private CompanyDAO myCompanyDAO;
 	
-	private DAOFactory() {
-		conn = DAOConnection.getConn();
-	}
+	private DAOFactory() { }
 	
 	public static DAOFactory getInstance() {
 		return myInstance;

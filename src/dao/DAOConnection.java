@@ -9,34 +9,27 @@ public class DAOConnection {
 	
 	private final static DAOConnection myInstance = new DAOConnection();
 	
-	private Connection conn;
-	
+	private final String url = "jdbc:mysql://127.0.0.1:3306/computer-database-db";
+	private final String login = "admincdb";
+	private final String password = "qwerty1234";
 	
 	private DAOConnection() {
-		String url = "jdbc:mysql://127.0.0.1:3306/computer-database-db";
-		String login = "admincdb";
-		String password = "qwerty1234";
-		try {
-			conn = DriverManager.getConnection(url, login, password);
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}	
+			
 	}
 	
 	public static DAOConnection getInstance() {
 		return myInstance;
 	}
 	
-	public static Connection getConn() {
-		return myInstance.conn;
-	}
-
-	public void finalize() {
+	public Connection getConn() {
+		Connection conn = null;
 		try {
-			conn.close();
+			conn = DriverManager.getConnection(url, login, password);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+		return conn;
 	}
+
 	
 }

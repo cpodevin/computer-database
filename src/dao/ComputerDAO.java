@@ -1,6 +1,5 @@
 package dao;
 
-import java.sql.Connection;
 import java.sql.Statement;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -13,7 +12,7 @@ import model.Computer;
 
 public class ComputerDAO extends DAO<Computer> {
 
-	private final static ComputerDAO myInstance = new ComputerDAO(DAOConnection.getConn());
+	private final static ComputerDAO myInstance = new ComputerDAO(DAOConnection.getInstance());
 	
 	private final String createQuery = "INSERT INTO computer (name,introduced,discontinued,company_id) VALUES (?,?,?,?)";
 	private final String deleteQuery = "DELETE FROM computer WHERE id = ?";
@@ -21,7 +20,7 @@ public class ComputerDAO extends DAO<Computer> {
 	private final String findQuery = "SELECT * FROM computer WHERE id = ?";		
 	private final String listQuery = "SELECT * FROM computer";
 	
-	private ComputerDAO(Connection conn) {
+	private ComputerDAO(DAOConnection conn) {
 		super(conn);
 	}
 	
@@ -30,8 +29,7 @@ public class ComputerDAO extends DAO<Computer> {
 	}
 	
 	public boolean create(Computer computer) {		
-		try {
-			PreparedStatement statement = conn.prepareStatement(createQuery,Statement.RETURN_GENERATED_KEYS);
+		try (PreparedStatement statement = conn.getConn().prepareStatement(createQuery,Statement.RETURN_GENERATED_KEYS)) {
 			statement.setString(1, computer.getName());
 			statement.setTimestamp(2, computer.getIntroduced());
 			statement.setTimestamp(3, computer.getDiscontinued());
@@ -53,8 +51,7 @@ public class ComputerDAO extends DAO<Computer> {
 	}
 	
 	public boolean delete(Computer computer) {	
-		try {
-			PreparedStatement statement = conn.prepareStatement(deleteQuery);
+		try (PreparedStatement statement = conn.getConn().prepareStatement(deleteQuery)) {		
 			statement.setInt(1,  computer.getId());
 			if (statement.executeUpdate()==1) {
 				return true;
@@ -67,9 +64,7 @@ public class ComputerDAO extends DAO<Computer> {
 	}
 
 	public boolean update(Computer computer) {
-				
-		try {
-			PreparedStatement statement = conn.prepareStatement(updateQuery);
+		try (PreparedStatement statement = conn.getConn().prepareStatement(updateQuery)) {		
 			statement.setString(1, computer.getName());
 			statement.setTimestamp(2, computer.getIntroduced());
 			statement.setTimestamp(3, computer.getDiscontinued());
@@ -90,8 +85,7 @@ public class ComputerDAO extends DAO<Computer> {
 	}
 	
 	public Computer find(int id) {
-		try {
-			PreparedStatement statement = conn.prepareStatement(findQuery);
+		try (PreparedStatement statement = conn.getConn().prepareStatement(findQuery)) {
 			statement.setInt(1, id);
 			ResultSet result = statement.executeQuery();
 			if (result.next()) {
@@ -108,8 +102,7 @@ public class ComputerDAO extends DAO<Computer> {
 	public List<Computer> list() {
 		List<Computer> resList = new ArrayList<>();
 		
-		try {
-			PreparedStatement statement = conn.prepareStatement(listQuery);
+		try (PreparedStatement statement = conn.getConn().prepareStatement(listQuery)) {		
 			ResultSet result = statement.executeQuery();
 			while (result.next()) {
 				resList.add(new Computer(result.getInt("id"),result.getString("name")));

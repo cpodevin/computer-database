@@ -11,9 +11,12 @@ import model.Company;
 
 public class CompanyDAO extends DAO<Company> {
 
-	private final static CompanyDAO myInstance = new CompanyDAO(DAOConnection.getConn());
+	private final static CompanyDAO myInstance = new CompanyDAO(DAOConnection.getInstance());
 	
-	private CompanyDAO(Connection conn) {
+	private final String findQuery = "SELECT * FROM company WHERE id = ?";
+	private final String listQuery = "SELECT * FROM company";
+	
+	private CompanyDAO(DAOConnection conn) {
 		super(conn);
 	}
 	
@@ -34,13 +37,9 @@ public class CompanyDAO extends DAO<Company> {
 	}
 	
 	public Company find(int id) {
-		String query = "SELECT * FROM company WHERE id = ?";
-		ResultSet result;
-		
-		try {
-			PreparedStatement statement = conn.prepareStatement(query);
+		try (PreparedStatement statement = conn.getConn().prepareStatement(findQuery)) {			
 			statement.setInt(1, id);
-			result = statement.executeQuery();
+			ResultSet result = statement.executeQuery();
 			if (result.next()) {
 				return new Company(result.getInt("id"),result.getString("name"));
 			}
@@ -51,13 +50,10 @@ public class CompanyDAO extends DAO<Company> {
 	}
 	
 	public List<Company> list() {
-		String query = "SELECT * FROM company";
-		ResultSet result;
 		List<Company> resList = new ArrayList<>();
 		
-		try {
-			PreparedStatement statement = conn.prepareStatement(query);
-			result = statement.executeQuery();
+		try (PreparedStatement statement = conn.getConn().prepareStatement(listQuery)) {			
+			ResultSet result = statement.executeQuery();
 			while (result.next()) {
 				resList.add(new Company(result.getInt("id"),result.getString("name")));
 			}

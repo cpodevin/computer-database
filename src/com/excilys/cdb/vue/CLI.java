@@ -1,24 +1,18 @@
 package com.excilys.cdb.vue;
 
+
 import java.sql.Date;
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Scanner;
 
-import com.excilys.cdb.dao.CompanyDAO;
-import com.excilys.cdb.dao.ComputerDAO;
-import com.excilys.cdb.dao.DAOFactory;
 import com.excilys.cdb.model.Company;
 import com.excilys.cdb.model.Computer;
+import com.excilys.cdb.model.Page;
 
 public class CLI {
 	
-	private ComputerDAO computerDAO;
 	private Scanner scanner;
 	
 	public CLI() {
-		computerDAO = DAOFactory.getInstance().getComputerDAO();
 		scanner = new Scanner(System.in);
 	}
 	
@@ -42,25 +36,71 @@ public class CLI {
 		return input;
 	}
 	
-	public void printCompanyList(List<Company> list) {
-		if (list.size()==0) {
+	public void printCompanyList(Page<Company> page) {
+		if (page.getNbLine()==0) {
 			System.out.println("Sorry, we found no company.");
 		} else {
-			System.out.println("----- Company List -----");
-			for (Company comp : list) {
-			System.out.println(comp.getId() + " : " + comp.getName());
-			}
+			int input;
+			do {
+				System.out.println("----- Company List -----");
+				System.out.println("1 : previous / 2 : next / 0 close");
+				for (Company comp : page.getPage()) {
+					System.out.println(comp.getId() + " : " + comp.getName());
+				}
+				
+				try {
+					input = Integer.parseInt(scanner.nextLine().split(" ")[0]);
+				} catch (NumberFormatException e) {
+					input = -1;
+				}
+				
+				if (input==1) {
+					if (!page.previous()) {
+						System.out.println("No page before");
+					}
+				}
+				
+				if (input==2) {
+					if (!page.next()) {
+						System.out.println("No page after");
+					}
+				}
+				
+			} while (input!=0);
 		}
 	}
 	
-	public void printComputerList(List<Computer> list) {
-		if (list.size()==0) {
+	public void printComputerList(Page<Computer> page) {
+		if (page.getNbLine()==0) {
 			System.out.println("Sorry, we found no computer.");
 		} else {
-			System.out.println("----- Computer List -----");
-			for (Computer comp : list) {
-			System.out.println(comp.getId() + " : " + comp.getName());
-			}
+			int input;
+			do {
+				System.out.println("----- Computer List -----");
+				System.out.println("1 : previous / 2 : next / 0 close");
+				for (Computer comp : page.getPage()) {
+					System.out.println(comp.getId() + " : " + comp.getName());
+				}
+				
+				try {
+					input = Integer.parseInt(scanner.nextLine().split(" ")[0]);
+				} catch (NumberFormatException e) {
+					input = -1;
+				}
+				
+				if (input==1) {
+					if (!page.previous()) {
+						System.out.println("No page before");
+					}
+				}
+				
+				if (input==2) {
+					if (!page.next()) {
+						System.out.println("No page after");
+					}
+				}
+				
+			} while (input!=0);
 		}
 	}
 	

@@ -1,33 +1,21 @@
 package com.excilys.cdb.controller;
 
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Scanner;
-
-import com.excilys.cdb.dao.CompanyDAO;
-import com.excilys.cdb.dao.ComputerDAO;
 import com.excilys.cdb.dao.DAOFactory;
 import com.excilys.cdb.model.Company;
 import com.excilys.cdb.model.Computer;
+import com.excilys.cdb.model.Page;
 import com.excilys.cdb.vue.CLI;
 
 public class Controller {
 
 	private CLI displayer;
-	private CompanyDAO companyDAO;
-	private ComputerDAO computerDAO;
 
 	
 	public Controller() {
-		displayer = new CLI();
-		companyDAO = DAOFactory.getInstance().getCompanyDAO();
-		computerDAO = DAOFactory.getInstance().getComputerDAO();	
-		
+		displayer = new CLI();	
 	}
 	
 	public void run() {
-		
 		
 		int input;
 		
@@ -39,10 +27,10 @@ public class Controller {
 				displayer.close();
 				break;
 			case 1 :
-				displayer.printComputerList(computerDAO.list());
+				displayer.printComputerList(new Page<Computer>(DAOFactory.getInstance().getComputerDAO().list()));
 				break;
 			case 2 :
-				displayer.printCompanyList(companyDAO.list());
+				displayer.printCompanyList(new Page<Company>(DAOFactory.getInstance().getCompanyDAO().list()));
 				break;
 			case 3 :
 				details();
@@ -72,7 +60,7 @@ public class Controller {
 		input = displayer.enterId();
 
 		if (input!=0) {
-			displayer.printComputerDetails(computerDAO.find(input));
+			displayer.printComputerDetails(DAOFactory.getInstance().getComputerDAO().find(input));
 		}
 	}
 
@@ -80,20 +68,20 @@ public class Controller {
 	
 	private void create() {	
 		Computer computer = displayer.enterComputer(true);
-		Company company = companyDAO.find(displayer.enterCompanyId());
+		Company company = DAOFactory.getInstance().getCompanyDAO().find(displayer.enterCompanyId());
 		computer.setCompany(company);
 		
-		boolean success = computerDAO.create(computer);
+		boolean success = DAOFactory.getInstance().getComputerDAO().create(computer);
 		
 		displayer.computerCreation(success,computer.getId());		
 	}
 
 	private void update() {	
 		Computer computer = displayer.enterComputer(false);
-		Company company = companyDAO.find(displayer.enterCompanyId());
+		Company company = DAOFactory.getInstance().getCompanyDAO().find(displayer.enterCompanyId());
 		computer.setCompany(company);
 		
-		boolean success = computerDAO.update(computer);
+		boolean success = DAOFactory.getInstance().getComputerDAO().update(computer);
 		
 		displayer.computerUpdate(success,computer.getId());		
 	}
@@ -104,8 +92,8 @@ public class Controller {
 		int input = displayer.enterId();		
 		
 		if (input != 0) {
-			Computer computer = computerDAO.find(input);
-			boolean success = computerDAO.delete(computer);	
+			Computer computer = DAOFactory.getInstance().getComputerDAO().find(input);
+			boolean success = DAOFactory.getInstance().getComputerDAO().delete(computer);	
 			displayer.computerDeletion(success,computer.getId());		
 		}
 	}

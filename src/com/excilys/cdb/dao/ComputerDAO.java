@@ -31,8 +31,8 @@ public class ComputerDAO extends DAO<Computer> {
 	public boolean create(Computer computer) {		
 		try (PreparedStatement statement = conn.getConn().prepareStatement(createQuery,Statement.RETURN_GENERATED_KEYS)) {
 			statement.setString(1, computer.getName());
-			statement.setTimestamp(2, computer.getIntroduced());
-			statement.setTimestamp(3, computer.getDiscontinued());
+			statement.setDate(2, computer.getIntroduced());
+			statement.setDate(3, computer.getDiscontinued());
 			if (computer.getCompany()==null) {
 				statement.setNull(4, java.sql.Types.INTEGER);
 			} else {
@@ -66,8 +66,8 @@ public class ComputerDAO extends DAO<Computer> {
 	public boolean update(Computer computer) {
 		try (PreparedStatement statement = conn.getConn().prepareStatement(updateQuery)) {		
 			statement.setString(1, computer.getName());
-			statement.setTimestamp(2, computer.getIntroduced());
-			statement.setTimestamp(3, computer.getDiscontinued());
+			statement.setDate(2, computer.getIntroduced());
+			statement.setDate(3, computer.getDiscontinued());
 			if (computer.getCompany()==null) {
 				statement.setNull(4, java.sql.Types.INTEGER);
 			} else {
@@ -91,7 +91,7 @@ public class ComputerDAO extends DAO<Computer> {
 			if (result.next()) {
 				CompanyDAO dao = DAOFactory.getInstance().getCompanyDAO();
 				Company company = dao.find(result.getInt("company_id"));;
-				return new Computer(result.getInt("id"), result.getString("name"), result.getTimestamp("introduced"), result.getTimestamp("discontinued"), company);
+				return new Computer(result.getInt("id"), result.getString("name"), result.getDate("introduced"), result.getDate("discontinued"), company);
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();

@@ -79,7 +79,9 @@ public class Controller {
 
 	
 	private void create() {	
-		Computer computer = displayer.enterComputer();
+		Computer computer = displayer.enterComputer(true);
+		Company company = companyDAO.find(displayer.enterCompanyId());
+		computer.setCompany(company);
 		
 		boolean success = computerDAO.create(computer);
 		
@@ -87,7 +89,9 @@ public class Controller {
 	}
 
 	private void update() {	
-		Computer computer = displayer.enterComputer();
+		Computer computer = displayer.enterComputer(false);
+		Company company = companyDAO.find(displayer.enterCompanyId());
+		computer.setCompany(company);
 		
 		boolean success = computerDAO.update(computer);
 		
@@ -96,11 +100,14 @@ public class Controller {
 	
 	
 	private void delete() {	
-		Computer computer = displayer.enterComputer();
 		
-		boolean success = computerDAO.delete(computer);
+		int input = displayer.enterId();		
 		
-		displayer.computerDeletion(success,computer.getId());		
+		if (input != 0) {
+			Computer computer = computerDAO.find(input);
+			boolean success = computerDAO.delete(computer);	
+			displayer.computerDeletion(success,computer.getId());		
+		}
 	}
 	
 }

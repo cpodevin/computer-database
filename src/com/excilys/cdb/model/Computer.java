@@ -1,16 +1,16 @@
 package com.excilys.cdb.model;
 
-import java.sql.Timestamp;
+import java.sql.Date;
 
 public class Computer {
 
 	private int id = 0;
 	private String name = "";
-	private Timestamp introduced = null;
-	private Timestamp discontinued = null;
+	private Date introduced = null;
+	private Date discontinued = null;
 	private Company company = null;
 	
-	public Computer(int id, String name, Timestamp introduced, Timestamp discontinued, Company company) {
+	public Computer(int id, String name, Date introduced, Date discontinued, Company company) {
 		this.id = id;
 		this.name = name;
 		this.introduced = introduced;
@@ -41,19 +41,19 @@ public class Computer {
 		this.name = name;
 	}
 	
-	public Timestamp getIntroduced() {
+	public Date getIntroduced() {
 		return introduced;
 	}
 	
-	public void setIntroduced(Timestamp introduced) {
+	public void setIntroduced(Date introduced) {
 		this.introduced = introduced;
 	}
 	
-	public Timestamp getDiscontinued() {
+	public Date getDiscontinued() {
 		return discontinued;
 	}
 	
-	public void setDiscontinued(Timestamp discontinued) {
+	public void setDiscontinued(Date discontinued) {
 		this.discontinued = discontinued;
 	}
 	

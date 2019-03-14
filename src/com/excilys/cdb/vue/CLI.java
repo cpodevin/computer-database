@@ -1,5 +1,6 @@
 package com.excilys.cdb.vue;
 
+import java.sql.Date;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -65,7 +66,7 @@ public class CLI {
 	
 	public int enterId() {
 		int input;
-		System.out.println("Please enter the id of the computer you want to see.");
+		System.out.println("Please enter the id of the computer.");
 		System.out.println("Enter 0 to go back to main menu.");
 
 		try {
@@ -88,39 +89,65 @@ public class CLI {
 		}
 	}
 	
-	public Computer enterComputer() {
+	public Computer enterComputer(boolean isACreation) {
 		
 		System.out.println("Please enter the name of the computer.");
 		String name = scanner.nextLine();
 		
-		System.out.println("Please enter the id of the commputer.");
+		int id = 0;
+		
+		if (!isACreation) {
+			System.out.println("Please enter the id of the commputer.");
+			System.out.println("Enter 0 if you don't know it.");
+			
+
+
+			try {
+				id = Integer.parseInt(scanner.nextLine().split(" ")[0]);
+			} catch (NumberFormatException e) {
+				id = 0;
+			}
+		}	
+		
+		System.out.println("Please enter the introduction date (use format yyyy-mm-dd).");
 		System.out.println("Enter 0 if you don't know it.");
 		
-		int id;
+		Date introduced;
 
 		try {
-			id = Integer.parseInt(scanner.nextLine().split(" ")[0]);
-		} catch (NumberFormatException e) {
-			id = 0;
-		}		
-		
-		System.out.println("Please enter the id of the company.");
-		System.out.println("Enter 0 if you don't know it.");
-		
-		int id_company;
-
-		try {
-			id_company = Integer.parseInt(scanner.nextLine().split(" ")[0]);
-		} catch (NumberFormatException e) {
-			id_company = 0;
+			introduced = Date.valueOf(scanner.nextLine());
+		} catch (IllegalArgumentException e) {
+			introduced = null;
 		}
 		
-		Timestamp time = Timestamp.valueOf(LocalDateTime.now());
-		Company company = DAOFactory.getInstance().getCompanyDAO().find(id_company);
-		Computer computer = new Computer(id, name, time, null, company);
+		System.out.println("Please enter the discontinuation date (use format yyyy-mm-dd).");
+		System.out.println("Enter 0 if you don't know it.");
+		
+		Date discontinued;
+
+		try {
+			discontinued = Date.valueOf(scanner.nextLine());
+		} catch (IllegalArgumentException e) {
+			discontinued = null;
+		}
+		
+		Computer computer = new Computer(id, name, introduced, discontinued, null);
 		return computer;
 	}
 
+	public int enterCompanyId() {
+		int input;
+		System.out.println("Please enter the id of the company.");
+		System.out.println("Enter 0 if you don't know it.");
+
+		try {
+			input = Integer.parseInt(scanner.nextLine().split(" ")[0]);
+		} catch (NumberFormatException e) {
+			input = 0;
+		}
+		return input;
+	}
+	
 	
 	public void computerCreation(boolean success, int id) {
 		if (success) {

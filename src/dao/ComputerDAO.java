@@ -15,6 +15,12 @@ public class ComputerDAO extends DAO<Computer> {
 
 	private final static ComputerDAO myInstance = new ComputerDAO(DAOConnection.getConn());
 	
+	private final String createQuery = "INSERT INTO computer (name,introduced,discontinued,company_id) VALUES (?,?,?,?)";
+	private final String deleteQuery = "DELETE FROM computer WHERE id = ?";
+	private final String updateQuery = "UPDATE computer SET name = ? , introduced = ? , discontinued = ? , company_id = ? WHERE id = ?";
+	private final String findQuery = "SELECT * FROM computer WHERE id = ?";		
+	private final String listQuery = "SELECT * FROM computer";
+	
 	private ComputerDAO(Connection conn) {
 		super(conn);
 	}
@@ -23,12 +29,9 @@ public class ComputerDAO extends DAO<Computer> {
 		return myInstance;
 	}
 	
-	public boolean create(Computer computer) {
-		String query = "INSERT INTO computer (name,introduced,discontinued,company_id) VALUES (?,?,?,?)";
-		ResultSet result;
-		
+	public boolean create(Computer computer) {		
 		try {
-			PreparedStatement statement = conn.prepareStatement(query,Statement.RETURN_GENERATED_KEYS);
+			PreparedStatement statement = conn.prepareStatement(createQuery,Statement.RETURN_GENERATED_KEYS);
 			statement.setString(1, computer.getName());
 			statement.setTimestamp(2, computer.getIntroduced());
 			statement.setTimestamp(3, computer.getDiscontinued());
@@ -38,7 +41,7 @@ public class ComputerDAO extends DAO<Computer> {
 				statement.setInt(4, computer.getCompany().getId());
 			}
 			statement.executeUpdate();
-			result = statement.getGeneratedKeys();
+			ResultSet result = statement.getGeneratedKeys();
 			if (result.next()) {
 				computer.setId(result.getInt(1));
 				return true;
@@ -49,14 +52,14 @@ public class ComputerDAO extends DAO<Computer> {
 		return false;
 	}
 	
-	public boolean delete(Computer computer) {
-		String query = "DELETE FROM computer WHERE id = ?";
-		
+	public boolean delete(Computer computer) {	
 		try {
-			PreparedStatement statement = conn.prepareStatement(query);
+			PreparedStatement statement = conn.prepareStatement(deleteQuery);
 			statement.setInt(1,  computer.getId());
-			statement.executeUpdate();
-			return true;
+			if (statement.executeUpdate()==1) {
+				return true;
+			}
+			return false;
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return false;
@@ -64,10 +67,9 @@ public class ComputerDAO extends DAO<Computer> {
 	}
 
 	public boolean update(Computer computer) {
-		String query = "UPDATE computer SET name = ? , introduced = ? , discontinued = ? , company_id = ? WHERE id = ?";
-		
+				
 		try {
-			PreparedStatement statement = conn.prepareStatement(query);
+			PreparedStatement statement = conn.prepareStatement(updateQuery);
 			statement.setString(1, computer.getName());
 			statement.setTimestamp(2, computer.getIntroduced());
 			statement.setTimestamp(3, computer.getDiscontinued());
@@ -77,8 +79,10 @@ public class ComputerDAO extends DAO<Computer> {
 				statement.setInt(4, computer.getCompany().getId());
 			}
 			statement.setInt(5, computer.getId());
-			statement.executeUpdate();
-			return true;
+			if (statement.executeUpdate()==1) {
+				return true;
+			}
+			return false;
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return false;
@@ -86,13 +90,10 @@ public class ComputerDAO extends DAO<Computer> {
 	}
 	
 	public Computer find(int id) {
-		String query = "SELECT * FROM computer WHERE id = ?";
-		ResultSet result;
-		
 		try {
-			PreparedStatement statement = conn.prepareStatement(query);
+			PreparedStatement statement = conn.prepareStatement(findQuery);
 			statement.setInt(1, id);
-			result = statement.executeQuery();
+			ResultSet result = statement.executeQuery();
 			if (result.next()) {
 				CompanyDAO dao = DAOFactory.getInstance().getCompanyDAO();
 				Company company = dao.find(result.getInt("company_id"));;
@@ -105,13 +106,11 @@ public class ComputerDAO extends DAO<Computer> {
 	}
 	
 	public List<Computer> list() {
-		String query = "SELECT * FROM computer";
-		ResultSet result;
 		List<Computer> resList = new ArrayList<>();
 		
 		try {
-			PreparedStatement statement = conn.prepareStatement(query);
-			result = statement.executeQuery();
+			PreparedStatement statement = conn.prepareStatement(listQuery);
+			ResultSet result = statement.executeQuery();
 			while (result.next()) {
 				resList.add(new Computer(result.getInt("id"),result.getString("name")));
 			}

@@ -1,26 +1,26 @@
-package controller;
+package com.excilys.cdb.controller;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Scanner;
 
-import dao.CompanyDAO;
-import dao.ComputerDAO;
-import dao.DAOFactory;
-import model.Company;
-import model.Computer;
-import vue.Displayer;
+import com.excilys.cdb.dao.CompanyDAO;
+import com.excilys.cdb.dao.ComputerDAO;
+import com.excilys.cdb.dao.DAOFactory;
+import com.excilys.cdb.model.Company;
+import com.excilys.cdb.model.Computer;
+import com.excilys.cdb.vue.CLI;
 
-public class CLI {
+public class Controller {
 
-	private Displayer displayer;
+	private CLI displayer;
 	private CompanyDAO companyDAO;
 	private ComputerDAO computerDAO;
 
 	
-	public CLI() {
-		displayer = new Displayer();
+	public Controller() {
+		displayer = new CLI();
 		companyDAO = DAOFactory.getInstance().getCompanyDAO();
 		computerDAO = DAOFactory.getInstance().getComputerDAO();	
 		

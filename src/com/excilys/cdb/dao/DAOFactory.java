@@ -1,5 +1,4 @@
-package dao;
-
+package com.excilys.cdb.dao;
 
 public class DAOFactory {
 

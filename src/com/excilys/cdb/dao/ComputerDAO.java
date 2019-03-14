@@ -1,4 +1,4 @@
-package dao;
+package com.excilys.cdb.dao;
 
 import java.sql.Statement;
 import java.sql.PreparedStatement;
@@ -7,8 +7,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import model.Company;
-import model.Computer;
+import com.excilys.cdb.model.Company;
+import com.excilys.cdb.model.Computer;
 
 public class ComputerDAO extends DAO<Computer> {
 

@@ -1,4 +1,4 @@
-package dao;
+package com.excilys.cdb.dao;
 
 public abstract class DAO<T> {
 

@@ -1,10 +1,10 @@
-package controller;
+package com.excilys.cdb.controller;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
-import model.Company;
-import model.Computer;
+import com.excilys.cdb.model.Company;
+import com.excilys.cdb.model.Computer;
 
 public class Main {
 	public static void main(String ... args) {
@@ -26,7 +26,7 @@ public class Main {
 		//displayer.computerDeletion(test);
 		*/
 		
-		CLI cli = new CLI();
+		Controller cli = new Controller();
 		cli.run();
 		
 	}

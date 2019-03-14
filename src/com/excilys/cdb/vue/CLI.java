@@ -1,22 +1,22 @@
-package vue;
+package com.excilys.cdb.vue;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Scanner;
 
-import dao.CompanyDAO;
-import dao.ComputerDAO;
-import dao.DAOFactory;
-import model.Company;
-import model.Computer;
+import com.excilys.cdb.dao.CompanyDAO;
+import com.excilys.cdb.dao.ComputerDAO;
+import com.excilys.cdb.dao.DAOFactory;
+import com.excilys.cdb.model.Company;
+import com.excilys.cdb.model.Computer;
 
-public class Displayer {
+public class CLI {
 	
 	private ComputerDAO computerDAO;
 	private Scanner scanner;
 	
-	public Displayer() {
+	public CLI() {
 		computerDAO = DAOFactory.getInstance().getComputerDAO();
 		scanner = new Scanner(System.in);
 	}

@@ -21,14 +21,8 @@ public class DAOConnection {
 		return myInstance;
 	}
 	
-	public Connection getConn() {
-		Connection conn = null;
-		try {
-			conn = DriverManager.getConnection(url, login, password);
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		return conn;
+	public Connection getConn() throws SQLException {
+		return DriverManager.getConnection(url, login, password);
 	}
 
 	

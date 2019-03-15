@@ -7,12 +7,16 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import com.excilys.cdb.model.Company;
 import com.excilys.cdb.model.Computer;
 
 public class ComputerDAO extends DAO<Computer> {
 
 	private final static ComputerDAO myInstance = new ComputerDAO(DAOConnection.getInstance());
+	private static final Logger logger = LogManager.getLogger();
 	
 	private final String createQuery = "INSERT INTO computer (name,introduced,discontinued,company_id) VALUES (?,?,?,?)";
 	private final String deleteQuery = "DELETE FROM computer WHERE id = ?";
@@ -45,7 +49,7 @@ public class ComputerDAO extends DAO<Computer> {
 				return true;
 			}
 		} catch (SQLException e) {
-			e.printStackTrace();
+			logger.error("DB Error", e);
 		}
 		return false;
 	}
@@ -58,7 +62,7 @@ public class ComputerDAO extends DAO<Computer> {
 			}
 			return false;
 		} catch (SQLException e) {
-			e.printStackTrace();
+			logger.error("DB Error", e);
 			return false;
 		}		
 	}
@@ -79,7 +83,7 @@ public class ComputerDAO extends DAO<Computer> {
 			}
 			return false;
 		} catch (SQLException e) {
-			e.printStackTrace();
+			logger.error("DB Error", e);
 			return false;
 		}		
 	}
@@ -94,7 +98,7 @@ public class ComputerDAO extends DAO<Computer> {
 				return new Computer(result.getInt("id"), result.getString("name"), result.getDate("introduced"), result.getDate("discontinued"), company);
 			}
 		} catch (SQLException e) {
-			e.printStackTrace();
+			logger.error("DB Error", e);
 		}
 		return null;
 	}
@@ -108,7 +112,7 @@ public class ComputerDAO extends DAO<Computer> {
 				resList.add(new Computer(result.getInt("id"),result.getString("name")));
 			}
 		} catch (SQLException e) {
-			e.printStackTrace();
+			logger.error("DB Error", e);
 		}
 		return resList;
 	}

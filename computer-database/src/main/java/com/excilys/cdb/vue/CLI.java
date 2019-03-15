@@ -4,11 +4,16 @@ package com.excilys.cdb.vue;
 import java.sql.Date;
 import java.util.Scanner;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import com.excilys.cdb.model.Company;
 import com.excilys.cdb.model.Computer;
 import com.excilys.cdb.model.Page;
 
 public class CLI {
+	
+	private static final Logger logger = LogManager.getLogger();
 	
 	private Scanner scanner;
 	
@@ -31,6 +36,7 @@ public class CLI {
 		try {
 			input = Integer.parseInt(scanner.nextLine().split(" ")[0]);
 		} catch (NumberFormatException e) {
+			logger.warn("Invalid input");
 			input = -1;
 		}
 		return input;
@@ -51,6 +57,7 @@ public class CLI {
 				try {
 					input = Integer.parseInt(scanner.nextLine().split(" ")[0]);
 				} catch (NumberFormatException e) {
+					logger.warn("Invalid input");
 					input = -1;
 				}
 				
@@ -85,6 +92,7 @@ public class CLI {
 				try {
 					input = Integer.parseInt(scanner.nextLine().split(" ")[0]);
 				} catch (NumberFormatException e) {
+					logger.warn("Invalid input");
 					input = -1;
 				}
 				
@@ -112,6 +120,7 @@ public class CLI {
 		try {
 			input = Integer.parseInt(scanner.nextLine().split(" ")[0]);
 		} catch (NumberFormatException e) {
+			logger.warn("Invalid input");
 			input = 0;
 		}
 		return input;
@@ -145,6 +154,7 @@ public class CLI {
 			try {
 				id = Integer.parseInt(scanner.nextLine().split(" ")[0]);
 			} catch (NumberFormatException e) {
+				logger.warn("Invalid input");
 				id = 0;
 			}
 		}	
@@ -157,8 +167,10 @@ public class CLI {
 		try {
 			introduced = Date.valueOf(scanner.nextLine());
 		} catch (IllegalArgumentException e) {
+			logger.warn("Invalid input");
 			introduced = null;
 		}
+		
 		
 		System.out.println("Please enter the discontinuation date (use format yyyy-mm-dd).");
 		System.out.println("Enter 0 if you don't know it.");
@@ -168,6 +180,7 @@ public class CLI {
 		try {
 			discontinued = Date.valueOf(scanner.nextLine());
 		} catch (IllegalArgumentException e) {
+			logger.warn("Invalid input");
 			discontinued = null;
 		}
 		
@@ -183,6 +196,7 @@ public class CLI {
 		try {
 			input = Integer.parseInt(scanner.nextLine().split(" ")[0]);
 		} catch (NumberFormatException e) {
+			logger.warn("Invalid input");
 			input = 0;
 		}
 		return input;

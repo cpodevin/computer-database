@@ -6,11 +6,15 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import com.excilys.cdb.model.Company;
 
 public class CompanyDAO extends DAO<Company> {
 
 	private final static CompanyDAO myInstance = new CompanyDAO(DAOConnection.getInstance());
+	private static final Logger logger = LogManager.getLogger();
 	
 	private final String findQuery = "SELECT * FROM company WHERE id = ?";
 	private final String listQuery = "SELECT * FROM company";
@@ -43,7 +47,7 @@ public class CompanyDAO extends DAO<Company> {
 				return new Company(result.getInt("id"),result.getString("name"));
 			}
 		} catch (SQLException e) {
-			e.printStackTrace();
+			logger.error("DB Error", e);
 		}
 		return null;
 	}
@@ -57,7 +61,7 @@ public class CompanyDAO extends DAO<Company> {
 				resList.add(new Company(result.getInt("id"),result.getString("name")));
 			}
 		} catch (SQLException e) {
-			e.printStackTrace();
+			logger.error("DB Error", e);
 		}
 		return resList;
 	}

@@ -7,8 +7,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.excilys.cdb.model.Company;
 import com.excilys.cdb.model.Computer;
@@ -16,7 +16,7 @@ import com.excilys.cdb.model.Computer;
 public class ComputerDAO extends DAO<Computer> {
 
 	private final static ComputerDAO myInstance = new ComputerDAO(DAOConnection.getInstance());
-	private static final Logger logger = LogManager.getLogger();
+	private static final Logger logger = LoggerFactory.getLogger(com.excilys.cdb.controller.Main.class);
 	
 	private final String createQuery = "INSERT INTO computer (name,introduced,discontinued,company_id) VALUES (?,?,?,?)";
 	private final String deleteQuery = "DELETE FROM computer WHERE id = ?";

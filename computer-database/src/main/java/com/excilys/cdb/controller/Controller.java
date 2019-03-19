@@ -9,7 +9,6 @@ import com.excilys.cdb.vue.CLI;
 public class Controller {
 
 	private CLI displayer;
-
 	
 	public Controller() {
 		displayer = new CLI();	
@@ -17,31 +16,31 @@ public class Controller {
 	
 	public void run() {
 		
-		int input;
+		CLI.Menu input;
 		
 		do {
 			input = displayer.menu();
 			
 			switch (input) {
-			case 0 :
+			case Exit :
 				displayer.close();
 				break;
-			case 1 :
+			case ComputerList :
 				displayer.printComputerList(new Page<Computer>(DAOFactory.getInstance().getComputerDAO().list()));
 				break;
-			case 2 :
+			case CompanyList :
 				displayer.printCompanyList(new Page<Company>(DAOFactory.getInstance().getCompanyDAO().list()));
 				break;
-			case 3 :
+			case ComputerDetails :
 				details();
 				break;
-			case 4 :
+			case CreateComputer :
 				create();
 				break;
-			case 5 :
+			case UpdateComputer :
 				update();
 				break;
-			case 6 :
+			case DeleteComputer :
 				delete();
 				break;
 			default :
@@ -50,7 +49,7 @@ public class Controller {
 			
 			System.out.println();
 			
-		} while (input != 0);
+		} while (input != CLI.Menu.Exit);
 	}
 
 	

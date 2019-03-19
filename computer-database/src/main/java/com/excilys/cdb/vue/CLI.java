@@ -18,13 +18,22 @@ public class CLI {
 	
 	private Scanner scanner;
 	
+	public enum Menu {
+		Exit,ComputerList,CompanyList,ComputerDetails,CreateComputer,UpdateComputer,DeleteComputer,InvalidInput
+	};
+	
+	public enum PageMenu {
+		Close,Previous,Next,InvalidInput
+	};
+	
 	public CLI() {
 		scanner = new Scanner(System.in);
 	}
 	
 	
-	public int menu() {
-		int input;
+	public Menu menu() {
+		Menu res;
+		
 		System.out.println(" -- Main Menu --");
 		System.out.println("Type 0 to exit.");
 		System.out.println("Type 1 to see the computer list.");
@@ -35,12 +44,18 @@ public class CLI {
 		System.out.println("Type 6 to delete a computer.");
 		
 		try {
-			input = Integer.parseInt(scanner.nextLine().split(" ")[0]);
+			int input = Integer.parseInt(scanner.nextLine().split(" ")[0]);
+			if (0 <= input && 6 >= input) {
+				res = Menu.values()[input];
+			} else {
+				logger.warn("Invalid input");
+				res = Menu.InvalidInput;
+			}
 		} catch (NumberFormatException e) {
 			logger.warn("Invalid input");
-			input = -1;
+			res = Menu.InvalidInput;
 		}
-		return input;
+		return res;
 	}
 	
 	public void printCompanyList(Page<Company> page) {
@@ -82,7 +97,7 @@ public class CLI {
 		if (page.getNbLine()==0) {
 			System.out.println("Sorry, we found no computer.");
 		} else {
-			int input;
+			PageMenu menuInput;
 			do {
 				System.out.println("----- Computer List -----");
 				System.out.println("1 : previous / 2 : next / 0 close");
@@ -91,25 +106,31 @@ public class CLI {
 				}
 				
 				try {
-					input = Integer.parseInt(scanner.nextLine().split(" ")[0]);
+					int input = Integer.parseInt(scanner.nextLine().split(" ")[0]);
+					if (0 <= input && 2 >= input) {
+						menuInput = PageMenu.values()[input];
+					} else {
+						logger.warn("Invalid input");
+						menuInput = PageMenu.InvalidInput;
+					}
 				} catch (NumberFormatException e) {
 					logger.warn("Invalid input");
-					input = -1;
+					menuInput = PageMenu.InvalidInput;
 				}
 				
-				if (input==1) {
+				if (menuInput == PageMenu.Previous) {
 					if (!page.previous()) {
 						System.out.println("No page before");
 					}
 				}
 				
-				if (input==2) {
+				if (menuInput == PageMenu.Next) {
 					if (!page.next()) {
 						System.out.println("No page after");
 					}
 				}
 				
-			} while (input!=0);
+			} while (menuInput != PageMenu.Close);
 		}
 	}
 	

@@ -1,5 +1,7 @@
 package com.excilys.cdb.dao;
 
+import java.util.List;
+
 public abstract class DAO<T> {
 
 	protected DAOConnection conn = null;
@@ -15,5 +17,7 @@ public abstract class DAO<T> {
 	public abstract boolean update(T object);
 	
 	public abstract T find(int id);
+	
+	public abstract List<T> list();
 	
 }

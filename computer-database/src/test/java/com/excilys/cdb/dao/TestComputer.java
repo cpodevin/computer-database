@@ -3,6 +3,7 @@ package com.excilys.cdb.dao;
 import com.excilys.cdb.model.Computer;
 
 import java.sql.Date;
+import java.util.Optional;
 
 import junit.framework.TestCase;
 
@@ -16,14 +17,14 @@ public class TestComputer extends TestCase {
 
 	@Test
 	public void testFind() {
-		Computer testNull = DAOFactory.getInstance().getComputerDAO().find(0);
-		assertNull(testNull);
+		Optional<Computer> testNull = DAOFactory.getInstance().getComputerDAO().find(0);
+		assertFalse(testNull.isPresent());
 
-		Computer testNotNull = DAOFactory.getInstance().getComputerDAO().find(5);
-		assertNotNull(testNotNull);
-		assertEquals(5, testNotNull.getId());
-		assertEquals("CM-5", testNotNull.getName());
-		assertEquals(Date.valueOf("1991-01-01"), testNotNull.getIntroduced());
-		assertNull(testNotNull.getDiscontinued());
+		Optional<Computer> testNotNull = DAOFactory.getInstance().getComputerDAO().find(5);
+		assertTrue(testNotNull.isPresent());
+		assertEquals(5, testNotNull.get().getId());
+		assertEquals("CM-5", testNotNull.get().getName());
+		assertEquals(Date.valueOf("1991-01-01"), testNotNull.get().getIntroduced());
+		assertNull(testNotNull.get().getDiscontinued());
 	}
 }

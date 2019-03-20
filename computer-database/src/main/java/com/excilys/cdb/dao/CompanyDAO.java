@@ -5,6 +5,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,17 +40,17 @@ public class CompanyDAO extends DAO<Company> {
 		return false;
 	}
 	
-	public Company find(int id) {
+	public Optional<Company> find(int id) {
 		try (PreparedStatement statement = conn.getConn().prepareStatement(findQuery)) {			
 			statement.setInt(1, id);
 			ResultSet result = statement.executeQuery();
 			if (result.next()) {
-				return new Company(result.getInt("id"),result.getString("name"));
+				return Optional.of(new Company(result.getInt("id"),result.getString("name")));
 			}
 		} catch (SQLException e) {
 			logger.error("DB Error", e);
 		}
-		return null;
+		return Optional.empty();
 	}
 	
 	public List<Company> list() {

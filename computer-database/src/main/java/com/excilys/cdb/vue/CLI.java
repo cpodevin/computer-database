@@ -1,7 +1,7 @@
 package com.excilys.cdb.vue;
 
-
 import java.sql.Date;
+import java.util.Optional;
 import java.util.Scanner;
 
 import org.slf4j.Logger;
@@ -11,29 +11,27 @@ import com.excilys.cdb.model.Company;
 import com.excilys.cdb.model.Computer;
 import com.excilys.cdb.model.Page;
 
-
 public class CLI {
-	
+
 	private static final Logger logger = LoggerFactory.getLogger(CLI.class);
-	
+
 	private Scanner scanner;
-	
+
 	public enum Menu {
-		Exit,ComputerList,CompanyList,ComputerDetails,CreateComputer,UpdateComputer,DeleteComputer,InvalidInput
+		Exit, ComputerList, CompanyList, ComputerDetails, CreateComputer, UpdateComputer, DeleteComputer, InvalidInput
 	};
-	
+
 	public enum PageMenu {
-		Close,Previous,Next,InvalidInput
+		Close, Previous, Next, InvalidInput
 	};
-	
+
 	public CLI() {
 		scanner = new Scanner(System.in);
 	}
-	
-	
+
 	public Menu menu() {
 		Menu res;
-		
+
 		System.out.println(" -- Main Menu --");
 		System.out.println("Type 0 to exit.");
 		System.out.println("Type 1 to see the computer list.");
@@ -42,7 +40,7 @@ public class CLI {
 		System.out.println("Type 4 to create a computer.");
 		System.out.println("Type 5 to update a computer.");
 		System.out.println("Type 6 to delete a computer.");
-		
+
 		try {
 			int input = Integer.parseInt(scanner.nextLine().split(" ")[0]);
 			if (0 <= input && 6 >= input) {
@@ -57,9 +55,9 @@ public class CLI {
 		}
 		return res;
 	}
-	
+
 	public void printCompanyList(Page<Company> page) {
-		if (page.getNbLine()==0) {
+		if (page.getNbLine() == 0) {
 			System.out.println("Sorry, we found no company.");
 		} else {
 			int input;
@@ -69,32 +67,32 @@ public class CLI {
 				for (Company comp : page.getPage()) {
 					System.out.println(comp.getId() + " : " + comp.getName());
 				}
-				
+
 				try {
 					input = Integer.parseInt(scanner.nextLine().split(" ")[0]);
 				} catch (NumberFormatException e) {
 					logger.warn("Invalid input");
 					input = -1;
 				}
-				
-				if (input==1) {
+
+				if (input == 1) {
 					if (!page.previous()) {
 						System.out.println("No page before");
 					}
 				}
-				
-				if (input==2) {
+
+				if (input == 2) {
 					if (!page.next()) {
 						System.out.println("No page after");
 					}
 				}
-				
-			} while (input!=0);
+
+			} while (input != 0);
 		}
 	}
-	
+
 	public void printComputerList(Page<Computer> page) {
-		if (page.getNbLine()==0) {
+		if (page.getNbLine() == 0) {
 			System.out.println("Sorry, we found no computer.");
 		} else {
 			PageMenu menuInput;
@@ -104,7 +102,7 @@ public class CLI {
 				for (Computer comp : page.getPage()) {
 					System.out.println(comp.getId() + " : " + comp.getName());
 				}
-				
+
 				try {
 					int input = Integer.parseInt(scanner.nextLine().split(" ")[0]);
 					if (0 <= input && 2 >= input) {
@@ -117,23 +115,23 @@ public class CLI {
 					logger.warn("Invalid input");
 					menuInput = PageMenu.InvalidInput;
 				}
-				
+
 				if (menuInput == PageMenu.Previous) {
 					if (!page.previous()) {
 						System.out.println("No page before");
 					}
 				}
-				
+
 				if (menuInput == PageMenu.Next) {
 					if (!page.next()) {
 						System.out.println("No page after");
 					}
 				}
-				
+
 			} while (menuInput != PageMenu.Close);
 		}
 	}
-	
+
 	public int enterId() {
 		int input;
 		System.out.println("Please enter the id of the computer.");
@@ -147,31 +145,32 @@ public class CLI {
 		}
 		return input;
 	}
-	
-	public void printComputerDetails(Computer res) {		
-		if (res==null) {
-			System.out.println("No computer with this number in the database.");
+
+	public void printComputerDetails(Optional<Computer> computer) {
+		if (computer.isPresent()) {
+			System.out.println(" -- Informations about computer number " + computer.get().getId() + " --");
+			System.out.println("Name : " + computer.get().getName());
+			System.out.println("Introduction Date : "
+					+ ((computer.get().getIntroduced() == null) ? "Unknown" : computer.get().getIntroduced()));
+			System.out.println("Discontinuation Date : "
+					+ ((computer.get().getDiscontinued() == null) ? "Unknown" : computer.get().getDiscontinued()));
+			System.out.println("Company Name : "
+					+ ((computer.get().getCompany().isPresent()) ? computer.get().getCompany().get().getName() : "Unknown" ));
 		} else {
-		System.out.println(" -- Informations about computer number " + res.getId() + " --");
-		System.out.println("Name : " + res.getName());
-		System.out.println("Introduction Date : " + ((res.getIntroduced()==null) ? "Unknown" : res.getIntroduced()));
-		System.out.println("Discontinuation Date : " + ((res.getDiscontinued()==null) ? "Unknown" : res.getDiscontinued()));
-		System.out.println("Company Name : " + ((res.getCompany()==null) ? "Unknown" : res.getCompany().getName()));	
+			System.out.println("No computer with this number in the database.");
 		}
 	}
-	
-	public Computer enterComputer(boolean isACreation) {
-		
+
+	public Optional<Computer> enterComputer(boolean isACreation) {
+
 		System.out.println("Please enter the name of the computer.");
 		String name = scanner.nextLine();
-		
+
 		int id = 0;
-		
+
 		if (!isACreation) {
 			System.out.println("Please enter the id of the commputer.");
 			System.out.println("Enter 0 if you don't know it.");
-			
-
 
 			try {
 				id = Integer.parseInt(scanner.nextLine().split(" ")[0]);
@@ -179,11 +178,15 @@ public class CLI {
 				logger.warn("Invalid input");
 				id = 0;
 			}
-		}	
-		
+			if (id==0) {
+				System.out.println("You need a valid id to update a computer.");
+				return Optional.empty();
+			}
+		}
+
 		System.out.println("Please enter the introduction date (use format yyyy-mm-dd).");
 		System.out.println("Enter 0 if you don't know it.");
-		
+
 		Date introduced;
 
 		try {
@@ -192,11 +195,10 @@ public class CLI {
 			logger.warn("Invalid input");
 			introduced = null;
 		}
-		
-		
+
 		System.out.println("Please enter the discontinuation date (use format yyyy-mm-dd).");
 		System.out.println("Enter 0 if you don't know it.");
-		
+
 		Date discontinued;
 
 		try {
@@ -205,9 +207,9 @@ public class CLI {
 			logger.warn("Invalid input");
 			discontinued = null;
 		}
-		
+
 		Computer computer = new Computer(id, name, introduced, discontinued, null);
-		return computer;
+		return Optional.of(computer);
 	}
 
 	public int enterCompanyId() {
@@ -223,8 +225,7 @@ public class CLI {
 		}
 		return input;
 	}
-	
-	
+
 	public void computerCreation(boolean success, int id) {
 		if (success) {
 			System.out.println("Computer number " + id + " successfully created");
@@ -232,7 +233,7 @@ public class CLI {
 			System.out.println("Error while creating your computer");
 		}
 	}
-	
+
 	public void computerDeletion(boolean success, int id) {
 		if (success) {
 			System.out.println("Computer number " + id + " successfully deleted");
@@ -240,7 +241,7 @@ public class CLI {
 			System.out.println("Error while deleting your computer");
 		}
 	}
-	
+
 	public void computerUpdate(boolean success, int id) {
 		if (success) {
 			System.out.println("Computer number " + id + " successfully updated");
@@ -253,5 +254,5 @@ public class CLI {
 		System.out.println("Good Bye");
 		scanner.close();
 	}
-	
+
 }

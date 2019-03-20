@@ -1,9 +1,9 @@
 package com.excilys.cdb.dao;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
 import com.excilys.cdb.model.Company;
 
@@ -18,13 +18,13 @@ public class TestCompany extends TestCase {
 
 	@Test
 	public void testFind() {
-		Company testNull = DAOFactory.getInstance().getCompanyDAO().find(0);
-		assertNull(testNull);
+		Optional<Company> testNull = DAOFactory.getInstance().getCompanyDAO().find(0);
+		assertFalse(testNull.isPresent());
 		
-		Company testNotNull = DAOFactory.getInstance().getCompanyDAO().find(5);
-		assertNotNull(testNotNull);
-		assertEquals(5,testNotNull.getId());
-		assertEquals("Tandy Corporation",testNotNull.getName());
+		Optional<Company> testNotNull = DAOFactory.getInstance().getCompanyDAO().find(5);
+		assertTrue(testNotNull.isPresent());
+		assertEquals(5,testNotNull.get().getId());
+		assertEquals("Tandy Corporation",testNotNull.get().getName());
 	}
 
 	@Test

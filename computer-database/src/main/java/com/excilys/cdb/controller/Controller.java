@@ -1,5 +1,7 @@
 package com.excilys.cdb.controller;
 
+import java.util.Optional;
+
 import com.excilys.cdb.dao.DAOFactory;
 import com.excilys.cdb.model.Company;
 import com.excilys.cdb.model.Computer;
@@ -66,23 +68,36 @@ public class Controller {
 
 	
 	private void create() {	
-		Computer computer = displayer.enterComputer(true);
-		Company company = DAOFactory.getInstance().getCompanyDAO().find(displayer.enterCompanyId());
-		computer.setCompany(company);
+		Optional<Computer> computer = displayer.enterComputer(true);
 		
-		boolean success = DAOFactory.getInstance().getComputerDAO().create(computer);
 		
-		displayer.computerCreation(success,computer.getId());		
+		if (computer.isPresent()) {
+			Optional<Company> company = DAOFactory.getInstance().getCompanyDAO().find(displayer.enterCompanyId());
+			computer.get().setCompany(company);
+			
+			boolean success = DAOFactory.getInstance().getComputerDAO().create(computer.get());
+			displayer.computerCreation(success,computer.get().getId());
+		} else {
+			displayer.computerCreation(false,  0);
+		}
+		
+		
+				
 	}
 
 	private void update() {	
-		Computer computer = displayer.enterComputer(false);
-		Company company = DAOFactory.getInstance().getCompanyDAO().find(displayer.enterCompanyId());
-		computer.setCompany(company);
+		Optional<Computer> computer = displayer.enterComputer(false);
 		
-		boolean success = DAOFactory.getInstance().getComputerDAO().update(computer);
-		
-		displayer.computerUpdate(success,computer.getId());		
+		if (computer.isPresent()) {
+			Optional<Company> company = DAOFactory.getInstance().getCompanyDAO().find(displayer.enterCompanyId());
+			computer.get().setCompany(company);
+			
+			boolean success = DAOFactory.getInstance().getComputerDAO().update(computer.get());		
+			displayer.computerUpdate(success,computer.get().getId());
+		} else {
+			displayer.computerUpdate(false, 0);
+		}
+				
 	}
 	
 	
@@ -91,9 +106,14 @@ public class Controller {
 		int input = displayer.enterId();		
 		
 		if (input != 0) {
-			Computer computer = DAOFactory.getInstance().getComputerDAO().find(input);
-			boolean success = DAOFactory.getInstance().getComputerDAO().delete(computer);	
-			displayer.computerDeletion(success,computer.getId());		
+			Optional<Computer> computer = DAOFactory.getInstance().getComputerDAO().find(input);
+			boolean success;
+			if (computer.isPresent()) {
+				 success = DAOFactory.getInstance().getComputerDAO().delete(computer.get());	
+			} else {
+				success = false;
+			}
+			displayer.computerDeletion(success,computer.isPresent() ? computer.get().getId() : 0);	
 		}
 	}
 	

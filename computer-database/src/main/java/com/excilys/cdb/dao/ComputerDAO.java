@@ -6,6 +6,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,10 +38,10 @@ public class ComputerDAO extends DAO<Computer> {
 			statement.setString(1, computer.getName());
 			statement.setDate(2, computer.getIntroduced());
 			statement.setDate(3, computer.getDiscontinued());
-			if (computer.getCompany()==null) {
+			if (!computer.getCompany().isPresent()) {
 				statement.setNull(4, java.sql.Types.INTEGER);
 			} else {
-				statement.setInt(4, computer.getCompany().getId());
+				statement.setInt(4, computer.getCompany().get().getId());
 			}
 			statement.executeUpdate();
 			ResultSet result = statement.getGeneratedKeys();
@@ -72,10 +73,10 @@ public class ComputerDAO extends DAO<Computer> {
 			statement.setString(1, computer.getName());
 			statement.setDate(2, computer.getIntroduced());
 			statement.setDate(3, computer.getDiscontinued());
-			if (computer.getCompany()==null) {
+			if (!computer.getCompany().isPresent()) {
 				statement.setNull(4, java.sql.Types.INTEGER);
 			} else {
-				statement.setInt(4, computer.getCompany().getId());
+				statement.setInt(4, computer.getCompany().get().getId());
 			}
 			statement.setInt(5, computer.getId());
 			if (statement.executeUpdate()==1) {
@@ -88,19 +89,19 @@ public class ComputerDAO extends DAO<Computer> {
 		}		
 	}
 	
-	public Computer find(int id) {
+	public Optional<Computer> find(int id) {
 		try (PreparedStatement statement = conn.getConn().prepareStatement(findQuery)) {
 			statement.setInt(1, id);
 			ResultSet result = statement.executeQuery();
 			if (result.next()) {
 				CompanyDAO dao = DAOFactory.getInstance().getCompanyDAO();
-				Company company = dao.find(result.getInt("company_id"));;
-				return new Computer(result.getInt("id"), result.getString("name"), result.getDate("introduced"), result.getDate("discontinued"), company);
+				Optional<Company> company = dao.find(result.getInt("company_id"));;
+				return Optional.of(new Computer(result.getInt("id"), result.getString("name"), result.getDate("introduced"), result.getDate("discontinued"), company));
 			}
 		} catch (SQLException e) {
 			logger.error("DB Error", e);
 		}
-		return null;
+		return Optional.empty();
 	}
 	
 	public List<Computer> list() {

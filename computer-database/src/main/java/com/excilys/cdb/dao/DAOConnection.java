@@ -13,9 +13,7 @@ public class DAOConnection {
 	private final String login = "admincdb";
 	private final String password = "qwerty1234";
 	
-	private DAOConnection() {
-			
-	}
+	private DAOConnection() { }
 	
 	public static DAOConnection getInstance() {
 		return myInstance;

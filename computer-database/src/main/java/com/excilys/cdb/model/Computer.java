@@ -1,6 +1,7 @@
 package com.excilys.cdb.model;
 
 import java.sql.Date;
+import java.util.Optional;
 
 public class Computer {
 
@@ -8,9 +9,9 @@ public class Computer {
 	private String name = "";
 	private Date introduced = null;
 	private Date discontinued = null;
-	private Company company = null;
+	private Optional<Company> company = null;
 	
-	public Computer(int id, String name, Date introduced, Date discontinued, Company company) {
+	public Computer(int id, String name, Date introduced, Date discontinued, Optional<Company> company) {
 		this.id = id;
 		this.name = name;
 		this.introduced = introduced;
@@ -57,11 +58,11 @@ public class Computer {
 		this.discontinued = discontinued;
 	}
 	
-	public Company getCompany() {
+	public Optional<Company> getCompany() {
 		return company;
 	}
 	
-	public void setCompany(Company company) {
+	public void setCompany(Optional<Company> company) {
 		this.company = company;
 	}
 	

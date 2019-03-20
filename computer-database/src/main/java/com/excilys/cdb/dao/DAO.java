@@ -1,6 +1,9 @@
 package com.excilys.cdb.dao;
 
 import java.util.List;
+import java.util.Optional;
+
+import com.excilys.cdb.model.Company;
 
 public abstract class DAO<T> {
 
@@ -16,7 +19,7 @@ public abstract class DAO<T> {
 	
 	public abstract boolean update(T object);
 	
-	public abstract T find(int id);
+	public abstract Optional<T> find(int id);
 	
 	public abstract List<T> list();
 	

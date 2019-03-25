@@ -1,6 +1,7 @@
 package com.excilys.cdb.dao;
 
 import java.sql.Statement;
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -14,10 +15,12 @@ import org.slf4j.LoggerFactory;
 import com.excilys.cdb.model.Company;
 import com.excilys.cdb.model.Computer;
 
-public class ComputerDAO extends DAO<Computer> {
+public class ComputerDAO {
 
-	private final static ComputerDAO myInstance = new ComputerDAO(DAOConnection.getInstance());
 	private static final Logger logger = LoggerFactory.getLogger(com.excilys.cdb.controller.Main.class);
+	
+	private static ComputerDAO myInstance = null;
+	private DAOFactory factory;
 	
 	private final String createQuery = "INSERT INTO computer (name,introduced,discontinued,company_id) VALUES (?,?,?,?)";
 	private final String deleteQuery = "DELETE FROM computer WHERE id = ?";
@@ -25,16 +28,20 @@ public class ComputerDAO extends DAO<Computer> {
 	private final String findQuery = "SELECT * FROM computer WHERE id = ?";		
 	private final String listQuery = "SELECT * FROM computer";
 	
-	private ComputerDAO(DAOConnection conn) {
-		super(conn);
+	private ComputerDAO(DAOFactory conn) {
+		this.factory = conn;
 	}
 	
-	public static ComputerDAO getInstance() {
+	public static ComputerDAO getInstance(DAOFactory conn) {
+		if (myInstance == null) {
+			myInstance = new ComputerDAO(conn);		
+		}
 		return myInstance;
 	}
 	
 	public boolean create(Computer computer) {		
-		try (PreparedStatement statement = conn.getConn().prepareStatement(createQuery,Statement.RETURN_GENERATED_KEYS)) {
+		try (Connection conn = factory.getConn(); 
+				PreparedStatement statement = conn.prepareStatement(createQuery,Statement.RETURN_GENERATED_KEYS)) {
 			statement.setString(1, computer.getName());
 			statement.setDate(2, computer.getIntroduced());
 			statement.setDate(3, computer.getDiscontinued());
@@ -50,26 +57,28 @@ public class ComputerDAO extends DAO<Computer> {
 				return true;
 			}
 		} catch (SQLException e) {
-			logger.error("DB Error", e);
+			logger.error("SQL : ", e);
 		}
 		return false;
 	}
 	
 	public boolean delete(Computer computer) {	
-		try (PreparedStatement statement = conn.getConn().prepareStatement(deleteQuery)) {		
+		try (Connection conn = factory.getConn(); 
+				PreparedStatement statement = conn.prepareStatement(deleteQuery)) {		
 			statement.setInt(1,  computer.getId());
 			if (statement.executeUpdate()==1) {
 				return true;
 			}
 			return false;
 		} catch (SQLException e) {
-			logger.error("DB Error", e);
+			logger.error("SQL : ", e);
 			return false;
 		}		
 	}
 
 	public boolean update(Computer computer) {
-		try (PreparedStatement statement = conn.getConn().prepareStatement(updateQuery)) {		
+		try (Connection conn = factory.getConn(); 
+				PreparedStatement statement = conn.prepareStatement(updateQuery)) {		
 			statement.setString(1, computer.getName());
 			statement.setDate(2, computer.getIntroduced());
 			statement.setDate(3, computer.getDiscontinued());
@@ -84,22 +93,22 @@ public class ComputerDAO extends DAO<Computer> {
 			}
 			return false;
 		} catch (SQLException e) {
-			logger.error("DB Error", e);
+			logger.error("SQL : ", e);
 			return false;
 		}		
 	}
 	
 	public Optional<Computer> find(int id) {
-		try (PreparedStatement statement = conn.getConn().prepareStatement(findQuery)) {
+		try (Connection conn = factory.getConn(); 
+				PreparedStatement statement = conn.prepareStatement(findQuery)) {
 			statement.setInt(1, id);
 			ResultSet result = statement.executeQuery();
 			if (result.next()) {
-				CompanyDAO dao = DAOFactory.getInstance().getCompanyDAO();
-				Optional<Company> company = dao.find(result.getInt("company_id"));;
+				Optional<Company> company = DAOFactory.getInstance().getCompanyDAO().find(result.getInt("company_id"));;
 				return Optional.of(new Computer(result.getInt("id"), result.getString("name"), result.getDate("introduced"), result.getDate("discontinued"), company));
 			}
 		} catch (SQLException e) {
-			logger.error("DB Error", e);
+			logger.error("SQL : ", e);
 		}
 		return Optional.empty();
 	}
@@ -107,13 +116,15 @@ public class ComputerDAO extends DAO<Computer> {
 	public List<Computer> list() {
 		List<Computer> resList = new ArrayList<>();
 		
-		try (PreparedStatement statement = conn.getConn().prepareStatement(listQuery)) {		
+		try (Connection conn = factory.getConn(); 
+				PreparedStatement statement = conn.prepareStatement(listQuery)) {		
 			ResultSet result = statement.executeQuery();
 			while (result.next()) {
-				resList.add(new Computer(result.getInt("id"),result.getString("name")));
+				Optional<Company> company = DAOFactory.getInstance().getCompanyDAO().find(result.getInt("company_id"));;
+				resList.add(new Computer(result.getInt("id"), result.getString("name"), result.getDate("introduced"), result.getDate("discontinued"), company));
 			}
 		} catch (SQLException e) {
-			logger.error("DB Error", e);
+			logger.error("SQL : ", e);
 		}
 		return resList;
 	}

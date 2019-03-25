@@ -3,7 +3,7 @@ package com.excilys.cdb.controller;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.excilys.cdb.dao.DAOConnection;
+import com.excilys.cdb.dao.DAOFactory;
 
 
 public class Main {
@@ -14,7 +14,7 @@ public class Main {
 		
 		//logger.warn("Warning message");
 		//logger.error("Error message");
-		DAOConnection.getInstance();
+		DAOFactory.getInstance();
 		Controller controller = new Controller();
 		controller.run();
 		

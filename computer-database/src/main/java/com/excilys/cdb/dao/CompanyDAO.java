@@ -1,5 +1,6 @@
 package com.excilys.cdb.dao;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -12,19 +13,24 @@ import org.slf4j.LoggerFactory;
 
 import com.excilys.cdb.model.Company;
 
-public class CompanyDAO extends DAO<Company> {
+public class CompanyDAO {
 
-	private final static CompanyDAO myInstance = new CompanyDAO(DAOConnection.getInstance());
 	private static final Logger logger = LoggerFactory.getLogger(CompanyDAO.class);
-	
+
+	private static CompanyDAO myInstance = new CompanyDAO(DAOFactory.getInstance());
+	private DAOFactory factory;
+
 	private final String findQuery = "SELECT * FROM company WHERE id = ?";
 	private final String listQuery = "SELECT * FROM company";
-	
-	private CompanyDAO(DAOConnection conn) {
-		super(conn);
+
+	private CompanyDAO(DAOFactory conn) {
+		this.factory = conn;
 	}
-	
-	public static CompanyDAO getInstance() {
+
+	public static CompanyDAO getInstance(DAOFactory conn) {
+		if (myInstance == null) {
+			myInstance = new CompanyDAO(conn);
+		}
 		return myInstance;
 	}
 	
@@ -41,7 +47,8 @@ public class CompanyDAO extends DAO<Company> {
 	}
 	
 	public Optional<Company> find(int id) {
-		try (PreparedStatement statement = conn.getConn().prepareStatement(findQuery)) {			
+		try (Connection conn = factory.getConn(); 
+				PreparedStatement statement = conn.prepareStatement(findQuery)) {			
 			statement.setInt(1, id);
 			ResultSet result = statement.executeQuery();
 			if (result.next()) {
@@ -56,7 +63,8 @@ public class CompanyDAO extends DAO<Company> {
 	public List<Company> list() {
 		List<Company> resList = new ArrayList<>();
 		
-		try (PreparedStatement statement = conn.getConn().prepareStatement(listQuery)) {			
+		try (Connection conn = factory.getConn(); 
+				PreparedStatement statement = conn.prepareStatement(listQuery)) {		
 			ResultSet result = statement.executeQuery();
 			while (result.next()) {
 				resList.add(new Company(result.getInt("id"),result.getString("name")));

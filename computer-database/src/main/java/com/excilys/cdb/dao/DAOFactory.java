@@ -22,6 +22,7 @@ public class DAOFactory {
 	private String url = "jdbc:mysql://127.0.0.1:3306/computer-database-db";
 	private String username = "admincdb";
 	private String password = "qwerty1234";
+	private String driver = "com.mysql.jdbc.Driver";
 
 	private Properties prop = new Properties();
 
@@ -36,7 +37,7 @@ public class DAOFactory {
 			logger.error("Error while loading properties file : ", e);
 		}
 		try {
-			Class.forName("com.mysql.jdbc.Driver");
+			Class.forName(driver);
 		} catch (ClassNotFoundException e) {
 			logger.error("Driver not found : ", e);
 		}

@@ -50,24 +50,24 @@ public class Page<T> {
 	}
 	
 	public boolean previous() {
-		if (index - pageSize >= 0) {
-			index -= pageSize;
+		if (--index * pageSize >= 0) {
 			return true;
 		} else {
+			index++;
 			return false;
 		}
 	}
 	
 	public boolean next() {
-		if (index + pageSize <= nbLine) {
-			index += pageSize;
+		if (++index * pageSize <= nbLine) {;
 			return true;
 		} else {
+			index--;
 			return false;
 		}
 	}
 	
 	public List<T> getPage() {
-		return data.subList(index, Math.min(index + pageSize, nbLine));
+		return data.subList(index * pageSize, Math.min((index + 1) * pageSize, nbLine));
 	}
 }

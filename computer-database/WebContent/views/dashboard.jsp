@@ -1,3 +1,8 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+	pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<!DOCTYPE html>
+
 <html>
 <head>
 <title>Computer Database</title>
@@ -9,20 +14,16 @@
 <link href="../css/main.css" rel="stylesheet" media="screen">
 </head>
 <body>
-	<%@ page import="com.excilys.cdb.service.Service" %>
-	<%@ page import="com.excilys.cdb.model.Computer" %>
-	<%@ page import="com.excilys.cdb.model.Page" %>
     <header class="navbar navbar-inverse navbar-fixed-top">
         <div class="container">
             <a class="navbar-brand" href="dashboard.html"> Application - Computer Database </a>
         </div>
     </header>
-    <%! Service service = new Service(); %>
-	<%! Page<Computer> list = service.getComputerList(); %>
+
     <section id="main">
         <div class="container">
             <h1 id="homeTitle">
-                <%= list.getNbLine() %> computers found.
+                <c:out value="${nbPage}" /> computers found.
             </h1>
             <div id="actions" class="form-horizontal">
                 <div class="pull-left">
@@ -77,20 +78,21 @@
                     </tr>
                 </thead>
                 <!-- Browse attribute computers -->
-                <% for(Computer computer : list.getPage()) { %>
+                
                 <tbody id="results">
-                    <tr>
-                        <td class="editMode">
-                            <input type="checkbox" name="cb" class="cb" value="0">
-                        </td>
-                        <td>
-                            <a href="editComputer.html" onclick=""><%= computer.getName()%></a>
-                        </td>
-                        <td><%= computer.getIntroduced() == null ? "" : computer.getIntroduced()%></td>
-                        <td><%= computer.getDiscontinued() == null ? "" : computer.getDiscontinued()%></td>
-                        <td><%= computer.getCompany().isPresent() ? computer.getCompany().get().getName() : ""%></td>
-                    </tr>
-                    <% } %>                    
+	                <c:forEach var="computer" items="${list}">
+	                    <tr>
+	                        <td class="editMode">
+	                            <input type="checkbox" name="cb" class="cb" value="0">
+	                        </td>
+	                        <td>
+	                            <a href="editComputer.html" onclick="">${computer.name}</a>
+	                        </td>
+	                        <td>${computer.introduced}</td>
+	                        <td>${computer.discontinued}</td>
+	                        <td>${computer.company}</td>
+	                    </tr>
+                    </c:forEach>                  
                 </tbody>
             </table>
         </div>

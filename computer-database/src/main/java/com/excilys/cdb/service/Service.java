@@ -1,17 +1,19 @@
 package com.excilys.cdb.service;
 
 
+import java.util.List;
+
 import com.excilys.cdb.dao.DAOFactory;
 import com.excilys.cdb.model.Computer;
-import com.excilys.cdb.model.Page;
+
 
 public class Service {
 
 	
 	public Service() { }
 	
-	public Page<Computer> getComputerList() {
-		return new Page<Computer>(DAOFactory.getInstance().getComputerDAO().list());
+	public List<Computer> getComputerList() {
+		return DAOFactory.getInstance().getComputerDAO().list();
 	}
 	
 	

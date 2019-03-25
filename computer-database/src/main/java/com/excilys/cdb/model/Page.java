@@ -49,20 +49,25 @@ public class Page<T> {
 		return nbLine;
 	}
 	
+	public boolean isLegal(int index) {
+		return (index * pageSize >= 0) && (index * pageSize <= nbLine);
+	}
+	
 	public boolean previous() {
-		if (--index * pageSize >= 0) {
+		if (isLegal(index-1)) {
+			index--;
 			return true;
 		} else {
-			index++;
 			return false;
 		}
 	}
 	
+	
 	public boolean next() {
-		if (++index * pageSize <= nbLine) {;
+		if (isLegal(index+1)) {
+			index++;
 			return true;
-		} else {
-			index--;
+		} else {	
 			return false;
 		}
 	}

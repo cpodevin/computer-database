@@ -11,6 +11,8 @@ public class ComputerDTO {
 	private String company = "";
 	private int companyId = 0;
 	
+	public ComputerDTO() { }
+	
 	public ComputerDTO(Computer computer) {
 		this.id = computer.getId();
 		this.name = computer.getName() != null ? computer.getName() : "";
@@ -64,7 +66,8 @@ public class ComputerDTO {
 		return companyId;
 	}
 	
-	public void setComapnyId(int companyId) {
+	public void setCompanyId(int companyId) {
 		this.companyId = companyId;
 	}
+	
 }

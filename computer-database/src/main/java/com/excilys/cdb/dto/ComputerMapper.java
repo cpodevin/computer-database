@@ -20,8 +20,16 @@ public class ComputerMapper {
 		
 		res.setId(dto.getId());
 		res.setName(dto.getName());
-		res.setIntroduced(Date.valueOf(dto.getIntroduced()));
-		res.setDiscontinued(Date.valueOf(dto.getDiscontinued()));
+		try {
+			res.setIntroduced(Date.valueOf(dto.getIntroduced()));
+		} catch (IllegalArgumentException e) {
+			res.setIntroduced(null);
+		}
+		try {
+			res.setDiscontinued(Date.valueOf(dto.getDiscontinued()));
+		} catch (IllegalArgumentException e) {
+			res.setDiscontinued(null);
+		}
 		res.setCompany(service.findCompany(dto.getCompanyId()));
 		
 		return res;

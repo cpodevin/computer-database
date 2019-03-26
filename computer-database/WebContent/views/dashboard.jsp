@@ -9,9 +9,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta charset="utf-8">
 <!-- Bootstrap -->
-<link href="../css/bootstrap.min.css" rel="stylesheet" media="screen">
-<link href="../css/font-awesome.css" rel="stylesheet" media="screen">
-<link href="../css/main.css" rel="stylesheet" media="screen">
+<link href="./css/bootstrap.min.css" rel="stylesheet" media="screen">
+<link href="./css/font-awesome.css" rel="stylesheet" media="screen">
+<link href="./css/main.css" rel="stylesheet" media="screen">
 </head>
 <body>
     <header class="navbar navbar-inverse navbar-fixed-top">
@@ -101,22 +101,22 @@
     <footer class="navbar-fixed-bottom">
         <div class="container text-center">
 			<ul class="pagination">
-				<li><a href="#" aria-label="Previous"> <span
+				<li><a href="./dashboard?page=previous" aria-label="Previous"> <span
 						aria-hidden="true">&laquo;</span>
 				</a></li>
-				<li><a href="#">1</a></li>
-				<li><a href="#">2</a></li>
-				<li><a href="#">3</a></li>
-				<li><a href="#">4</a></li>
-				<li><a href="#">5</a></li>
-				<li><a href="#" aria-label="Next"> <span aria-hidden="true">&raquo;</span>
+				<li><a href="./dashboard?page=1">1</a></li>
+				<li><a href="./dashboard?page=2">2</a></li>
+				<li><a href="./dashboard?page=3">3</a></li>
+				<li><a href="./dashboard?page=4">4</a></li>
+				<li><a href="./dashboard?page=5">5</a></li>
+				<li><a href="./dashboard?page=next" aria-label="Next"> <span aria-hidden="true">&raquo;</span>
 				</a></li>
 			</ul>
 		</div>
         <div class="btn-group btn-group-sm pull-right" role="group" >
-            <button type="button" class="btn btn-default">10</button>
-            <button type="button" class="btn btn-default">50</button>
-            <button type="button" class="btn btn-default">100</button>
+            <a href="./dashboard?size=10"><button type="button" class="btn btn-default">10</button></a>
+            <a href="./dashboard?size=50"><button type="button" class="btn btn-default">50</button></a>
+            <a href="./dashboard?size=100"><button type="button" class="btn btn-default">100</button></a>
         </div>
 
     </footer>

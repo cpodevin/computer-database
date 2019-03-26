@@ -17,7 +17,7 @@ public class DAOFactory {
 
 	private static DAOFactory myInstance = null;
 	
-	private static final String propertiesFile = "properties/dao.properties";
+	private static final String propertiesFile = "./properties/dao.properties";
 
 	private String url = "jdbc:mysql://127.0.0.1:3306/computer-database-db";
 	private String username = "admincdb";

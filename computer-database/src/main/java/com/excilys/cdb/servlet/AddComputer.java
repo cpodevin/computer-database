@@ -9,10 +9,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.excilys.cdb.controller.Main;
 import com.excilys.cdb.dto.ComputerDTO;
 import com.excilys.cdb.dto.ComputerMapper;
 import com.excilys.cdb.model.Company;
@@ -23,9 +19,7 @@ import com.excilys.cdb.service.Service;
  */
 @WebServlet("/addComputer")
 public class AddComputer extends HttpServlet {
-	private static final long serialVersionUID = 1L;
-    
-	private static final Logger logger = LoggerFactory.getLogger(AddComputer.class);
+	private static final long serialVersionUID = 2L;
 	
 	private List<Company> list;
 	
@@ -34,14 +28,14 @@ public class AddComputer extends HttpServlet {
      */
     public AddComputer() {
         super();
-        getData();
     }
 
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-
+		Service service = new Service();
+		list = service.getCompanyList();
 		request.setAttribute("list", list);
 		
 		getServletContext().getRequestDispatcher("/views/addComputer.jsp").forward(request, response);
@@ -52,7 +46,7 @@ public class AddComputer extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
-		
+	
 		String computerName = request.getParameter("computerName");
 		String introduced = request.getParameter("introduced");
 		String discontinued = request.getParameter("discontinued");
@@ -69,11 +63,6 @@ public class AddComputer extends HttpServlet {
 		request.setAttribute("res", service.createComputer(mapper.getComputer(dto)));
 		
 		doGet(request, response);
-	}
-
-	private void getData() {
-		Service service = new Service();
-		list = service.getCompanyList();
 	}
 	
 }

@@ -22,55 +22,41 @@ import com.excilys.cdb.service.Service;
 public class Dashboard extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	
-	private int pageSize = 10;
-	private int pageNumber = 0;
     private Page<ComputerDTO> displayer;
     /**
      * @see HttpServlet#HttpServlet()
      */
     public Dashboard() {
         super();
-        getData();
     }
 
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
+
+		getData();
 		
 		String tmp = request.getParameter("page");
+		
 		if (tmp != null) {
-			switch (tmp) {
-			case "previous" :
-				displayer.previous();
-				pageNumber = displayer.getIndex();
-				break;
-			case "next" :
-				displayer.next();
-				pageNumber = displayer.getIndex();
-				break;
-			default : 
-				pageNumber = Integer.parseInt(tmp)-1;
-				if (!displayer.isLegal(pageNumber)) {
-					pageNumber=0;
-				}
-				displayer.setIndex(pageNumber);
-			}
+			displayer.setIndex(Integer.parseInt(tmp)-1);
 		}
 		
 		tmp = request.getParameter("size");
+		
 		if (tmp != null) {
-			pageNumber = Integer.parseInt(tmp);
-			displayer.setPageSize(pageNumber);
-			if (!displayer.isLegal(pageNumber)) {
-				pageNumber = 0;
-				displayer.setIndex(pageNumber);
-			}
+			displayer.setPageSize(Integer.parseInt(tmp));
+		}
+		
+		if (!displayer.isLegal()) {
+			displayer.setIndex(0);
 		}
 		
 		request.setAttribute("nbPage", displayer.getNbLine());
 		request.setAttribute("list",displayer.getPage());
+		request.setAttribute("current", displayer.getIndex()+1);
+		request.setAttribute("size", displayer.getPageSize());
 		
 		getServletContext().getRequestDispatcher("/views/dashboard.jsp").forward(request, response);
 	}
@@ -90,7 +76,7 @@ public class Dashboard extends HttpServlet {
 		for (Computer computer : computerList) {
 			computerData.add(new ComputerDTO(computer));
 		}
-		displayer = new Page<>(computerData,pageSize);
+		displayer = new Page<>(computerData,10);
 	}
 	
 }

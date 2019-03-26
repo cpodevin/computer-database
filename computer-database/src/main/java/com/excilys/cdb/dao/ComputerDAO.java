@@ -6,7 +6,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.slf4j.Logger;
@@ -114,13 +116,20 @@ public class ComputerDAO {
 	}
 	
 	public List<Computer> list() {
+
+		List<Company> companyList = DAOFactory.getInstance().getCompanyDAO().list();
+		Map<Integer,Company> companyMap  = new HashMap<>();
+		for (Company company : companyList) {
+			companyMap.put(company.getId(),company);
+		}
+		
 		List<Computer> resList = new ArrayList<>();
 		
 		try (Connection conn = factory.getConn(); 
 				PreparedStatement statement = conn.prepareStatement(listQuery)) {		
 			ResultSet result = statement.executeQuery();
 			while (result.next()) {
-				Optional<Company> company = DAOFactory.getInstance().getCompanyDAO().find(result.getInt("company_id"));;
+				Optional<Company> company = companyMap.containsKey(result.getInt("company_id")) ? Optional.of(companyMap.get(result.getInt("company_id"))) : Optional.empty();
 				resList.add(new Computer(result.getInt("id"), result.getString("name"), result.getDate("introduced"), result.getDate("discontinued"), company));
 			}
 		} catch (SQLException e) {

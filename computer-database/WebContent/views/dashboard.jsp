@@ -101,15 +101,15 @@
     <footer class="navbar-fixed-bottom">
         <div class="container text-center">
 			<ul class="pagination">
-				<li><a href="./dashboard?page=previous" aria-label="Previous"> <span
+				<li><a href="./dashboard?page=${current-1}&size=${size}" aria-label="Previous"> <span
 						aria-hidden="true">&laquo;</span>
 				</a></li>
-				<li><a href="./dashboard?page=1">1</a></li>
-				<li><a href="./dashboard?page=2">2</a></li>
-				<li><a href="./dashboard?page=3">3</a></li>
-				<li><a href="./dashboard?page=4">4</a></li>
-				<li><a href="./dashboard?page=5">5</a></li>
-				<li><a href="./dashboard?page=next" aria-label="Next"> <span aria-hidden="true">&raquo;</span>
+				<li><a href="./dashboard?page=1&size=${size}">1</a></li>
+				<li><a href="./dashboard?page=2&size=${size}">2</a></li>
+				<li><a href="./dashboard?page=3&size=${size}">3</a></li>
+				<li><a href="./dashboard?page=4&size=${size}">4</a></li>
+				<li><a href="./dashboard?page=5&size=${size}">5</a></li>
+				<li><a href="./dashboard?page=${current+1}&size=${size}" aria-label="Next"> <span aria-hidden="true">&raquo;</span>
 				</a></li>
 			</ul>
 		</div>

@@ -1,5 +1,6 @@
 package com.excilys.cdb.dao;
 
+import com.excilys.cdb.exception.DAOException;
 import com.excilys.cdb.model.Computer;
 
 import java.sql.Date;
@@ -16,7 +17,7 @@ public class TestComputer extends TestCase {
 	}
 
 	@Test
-	public void testFind() {
+	public void testFind() throws DAOException {
 		Optional<Computer> testNull = DAOFactory.getInstance().getComputerDAO().find(0);
 		assertFalse(testNull.isPresent());
 

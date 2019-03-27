@@ -15,7 +15,7 @@
 <body>
     <header class="navbar navbar-inverse navbar-fixed-top">
         <div class="container">
-            <a class="navbar-brand" href="dashboard.html"> Application - Computer Database </a>
+            <a class="navbar-brand" href="./dashboard"> Application - Computer Database </a>
         </div>
     </header>
 
@@ -29,7 +29,6 @@
                             <div class="form-group">
                                 <label for="computerName">Computer name</label>
                                 <input type="text" class="form-control" id="computerName" placeholder="Computer name" name="computerName">
-                           		<span id="emptyNameError" class="error">A computer name must be set.</span>
                             </div>
                             <div class="form-group">
                                 <label for="introduced">Introduced date</label>
@@ -57,9 +56,9 @@
                     </form>
                 </div>
             </div>
-            <c:if test="${res}">
-            	<p> Success </p>
-            </c:if>
+            <p>
+            	<c:out value="${res}" /> 
+            </p>
         </div>
     </section>
     <script src="./js/jquery.min.js"></script>

@@ -1,6 +1,5 @@
 $(document).ready(function () {
 	if($("#computerName").val().trim() == ""){
-		  $("#emptyNameError").css('display', 'block');
 		  $('#submit').prop('disabled', true);
 	  }
 	
@@ -22,10 +21,8 @@ $(document).ready(function () {
   
   $("#computerName").on('input propertychange', function () {
 	  if($("#computerName").val().trim() != ""){
-		  $("#emptyNameError").css('display', 'none');
 		  $('#submit').prop('disabled', false);
 	  } else {
-		  $("#emptyNameError").css('display', 'block');
 		  $('#submit').prop('disabled', true);
 	  }
   });

@@ -1,5 +1,6 @@
 package com.excilys.cdb.controller;
 
+import java.util.ArrayList;
 import java.util.Optional;
 
 import com.excilys.cdb.dao.DAOFactory;
@@ -29,7 +30,11 @@ public class Controller {
 				displayer.close();
 				break;
 			case ComputerList :
-				displayer.printComputerList(new Page<Computer>(DAOFactory.getInstance().getComputerDAO().list()));
+				try {
+					displayer.printComputerList(new Page<Computer>(DAOFactory.getInstance().getComputerDAO().list()));
+				} catch (DAOException e) {
+					displayer.printComputerList(new Page<Computer>(new ArrayList<Computer>()));
+				}
 				break;
 			case CompanyList :
 				displayer.printCompanyList(new Page<Company>(DAOFactory.getInstance().getCompanyDAO().list()));
@@ -62,7 +67,11 @@ public class Controller {
 		input = displayer.enterId();
 
 		if (input!=0) {
-			displayer.printComputerDetails(DAOFactory.getInstance().getComputerDAO().find(input));
+			try {
+				displayer.printComputerDetails(DAOFactory.getInstance().getComputerDAO().find(input));
+			} catch (DAOException e) {
+				displayer.printComputerDetails(Optional.empty());
+			}
 		}
 	}
 
@@ -116,7 +125,12 @@ public class Controller {
 		int input = displayer.enterId();		
 		
 		if (input != 0) {
-			Optional<Computer> computer = DAOFactory.getInstance().getComputerDAO().find(input);
+			Optional<Computer> computer;
+			try {
+				computer = DAOFactory.getInstance().getComputerDAO().find(input);
+			} catch (DAOException e1) {
+				computer = Optional.empty();
+			}
 			if (computer.isPresent()) {
 				 try {
 					 DAOFactory.getInstance().getComputerDAO().delete(computer.get());

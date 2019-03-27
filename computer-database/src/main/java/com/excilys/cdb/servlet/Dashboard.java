@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.excilys.cdb.dto.ComputerDTO;
+import com.excilys.cdb.exception.DAOException;
 import com.excilys.cdb.model.Computer;
 import com.excilys.cdb.model.Page;
 import com.excilys.cdb.service.Service;
@@ -35,7 +36,11 @@ public class Dashboard extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-		getData();
+		try {
+			getData();
+		} catch (DAOException e) {
+			response.sendRedirect("/views/500.html");
+		}
 		
 		String tmp = request.getParameter("page");
 		
@@ -69,7 +74,7 @@ public class Dashboard extends HttpServlet {
 		doGet(request, response);
 	}
 
-	private void getData() {
+	private void getData() throws DAOException {
 		Service service = new Service();
 		List<Computer> computerList = service.getComputerList();
 		List<ComputerDTO> computerData = new ArrayList<>();

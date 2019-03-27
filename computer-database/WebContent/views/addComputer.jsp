@@ -29,7 +29,7 @@
                             <div class="form-group">
                                 <label for="computerName">Computer name</label>
                                 <input type="text" class="form-control" id="computerName" placeholder="Computer name" name="computerName">
-                           		<span id="emptyNameError" class="error">Computer name must be set.</span>
+                           		<span id="emptyNameError" class="error">A computer name must be set.</span>
                             </div>
                             <div class="form-group">
                                 <label for="introduced">Introduced date</label>

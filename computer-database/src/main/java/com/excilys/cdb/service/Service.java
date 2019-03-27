@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 
 import com.excilys.cdb.dao.DAOFactory;
+import com.excilys.cdb.exception.DAOException;
 import com.excilys.cdb.model.Company;
 import com.excilys.cdb.model.Computer;
 
@@ -26,8 +27,8 @@ public class Service {
 		return DAOFactory.getInstance().getCompanyDAO().list();
 	}
 	
-	public boolean createComputer(Computer computer) {
-		return DAOFactory.getInstance().getComputerDAO().create(computer);
+	public void createComputer(Computer computer) throws DAOException {
+		DAOFactory.getInstance().getComputerDAO().create(computer);
 	}
 	
 }

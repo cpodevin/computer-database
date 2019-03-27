@@ -11,15 +11,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+import com.excilys.cdb.exception.DAOException;
 import com.excilys.cdb.model.Company;
 import com.excilys.cdb.model.Computer;
 
 public class ComputerDAO {
-
-	private static final Logger logger = LoggerFactory.getLogger(com.excilys.cdb.controller.Main.class);
 	
 	private static ComputerDAO myInstance = null;
 	private DAOFactory factory;
@@ -41,7 +37,7 @@ public class ComputerDAO {
 		return myInstance;
 	}
 	
-	public boolean create(Computer computer) {		
+	public void create(Computer computer) throws DAOException {	
 		try (Connection conn = factory.getConn(); 
 				PreparedStatement statement = conn.prepareStatement(createQuery,Statement.RETURN_GENERATED_KEYS)) {
 			statement.setString(1, computer.getName());
@@ -56,29 +52,26 @@ public class ComputerDAO {
 			ResultSet result = statement.getGeneratedKeys();
 			if (result.next()) {
 				computer.setId(result.getInt(1));
-				return true;
 			}
 		} catch (SQLException e) {
-			logger.error("SQL : ", e);
+			throw new DAOException(e);
 		}
-		return false;
+
 	}
 	
-	public boolean delete(Computer computer) {	
+	public void delete(Computer computer) throws DAOException {
 		try (Connection conn = factory.getConn(); 
 				PreparedStatement statement = conn.prepareStatement(deleteQuery)) {		
 			statement.setInt(1,  computer.getId());
-			if (statement.executeUpdate()==1) {
-				return true;
+			if (statement.executeUpdate()!=1) {
+				throw new DAOException("No line found to delete.");
 			}
-			return false;
 		} catch (SQLException e) {
-			logger.error("SQL : ", e);
-			return false;
+			throw new DAOException(e);
 		}		
 	}
 
-	public boolean update(Computer computer) {
+	public void update(Computer computer) throws DAOException {
 		try (Connection conn = factory.getConn(); 
 				PreparedStatement statement = conn.prepareStatement(updateQuery)) {		
 			statement.setString(1, computer.getName());
@@ -90,17 +83,15 @@ public class ComputerDAO {
 				statement.setInt(4, computer.getCompany().get().getId());
 			}
 			statement.setInt(5, computer.getId());
-			if (statement.executeUpdate()==1) {
-				return true;
+			if (statement.executeUpdate()!=1) {
+				throw new DAOException("No line found to update.");
 			}
-			return false;
 		} catch (SQLException e) {
-			logger.error("SQL : ", e);
-			return false;
+			throw new DAOException(e);
 		}		
 	}
 	
-	public Optional<Computer> find(int id) {
+	public Optional<Computer> find(int id) throws DAOException {
 		try (Connection conn = factory.getConn(); 
 				PreparedStatement statement = conn.prepareStatement(findQuery)) {
 			statement.setInt(1, id);
@@ -110,12 +101,12 @@ public class ComputerDAO {
 				return Optional.of(new Computer(result.getInt("id"), result.getString("name"), result.getDate("introduced"), result.getDate("discontinued"), company));
 			}
 		} catch (SQLException e) {
-			logger.error("SQL : ", e);
+			throw new DAOException(e);
 		}
 		return Optional.empty();
 	}
 	
-	public List<Computer> list() {
+	public List<Computer> list() throws DAOException {
 
 		List<Company> companyList = DAOFactory.getInstance().getCompanyDAO().list();
 		Map<Integer,Company> companyMap  = new HashMap<>();
@@ -133,7 +124,7 @@ public class ComputerDAO {
 				resList.add(new Computer(result.getInt("id"), result.getString("name"), result.getDate("introduced"), result.getDate("discontinued"), company));
 			}
 		} catch (SQLException e) {
-			logger.error("SQL : ", e);
+			throw new DAOException(e);
 		}
 		return resList;
 	}

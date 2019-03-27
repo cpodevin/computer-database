@@ -3,6 +3,7 @@ package com.excilys.cdb.controller;
 import java.util.Optional;
 
 import com.excilys.cdb.dao.DAOFactory;
+import com.excilys.cdb.exception.DAOException;
 import com.excilys.cdb.model.Company;
 import com.excilys.cdb.model.Computer;
 import com.excilys.cdb.model.Page;
@@ -75,8 +76,13 @@ public class Controller {
 			Optional<Company> company = DAOFactory.getInstance().getCompanyDAO().find(displayer.enterCompanyId());
 			computer.get().setCompany(company);
 			
-			boolean success = DAOFactory.getInstance().getComputerDAO().create(computer.get());
-			displayer.computerCreation(success,computer.get().getId());
+			try {
+				DAOFactory.getInstance().getComputerDAO().create(computer.get());
+				displayer.computerCreation(true,computer.get().getId());
+			} catch (DAOException e) {
+				displayer.computerCreation(false,  0);
+			}
+			
 		} else {
 			displayer.computerCreation(false,  0);
 		}
@@ -92,8 +98,12 @@ public class Controller {
 			Optional<Company> company = DAOFactory.getInstance().getCompanyDAO().find(displayer.enterCompanyId());
 			computer.get().setCompany(company);
 			
-			boolean success = DAOFactory.getInstance().getComputerDAO().update(computer.get());		
-			displayer.computerUpdate(success,computer.get().getId());
+			try {	
+				DAOFactory.getInstance().getComputerDAO().update(computer.get());		
+				displayer.computerUpdate(true,computer.get().getId());
+			} catch (DAOException e) {
+				displayer.computerUpdate(false,  0);
+			}
 		} else {
 			displayer.computerUpdate(false, 0);
 		}
@@ -107,13 +117,17 @@ public class Controller {
 		
 		if (input != 0) {
 			Optional<Computer> computer = DAOFactory.getInstance().getComputerDAO().find(input);
-			boolean success;
 			if (computer.isPresent()) {
-				 success = DAOFactory.getInstance().getComputerDAO().delete(computer.get());	
+				 try {
+					 DAOFactory.getInstance().getComputerDAO().delete(computer.get());
+					 displayer.computerDeletion(true, computer.get().getId());
+				 } catch (DAOException e) {
+					 displayer.computerDeletion(false,0);
+				 }
 			} else {
-				success = false;
+				displayer.computerDeletion(false, 0);
 			}
-			displayer.computerDeletion(success,computer.isPresent() ? computer.get().getId() : 0);	
+				
 		}
 	}
 	

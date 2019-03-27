@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.excilys.cdb.dto.ComputerDTO;
 import com.excilys.cdb.dto.ComputerMapper;
+import com.excilys.cdb.exception.DAOException;
 import com.excilys.cdb.model.Company;
 import com.excilys.cdb.service.Service;
 
@@ -60,7 +61,12 @@ public class AddComputer extends HttpServlet {
 		
 		Service service = new Service();
 		ComputerMapper mapper = new ComputerMapper();
-		request.setAttribute("res", service.createComputer(mapper.getComputer(dto)));
+		try {
+			service.createComputer(mapper.getComputer(dto));
+			request.setAttribute("res", true);
+		} catch (DAOException e) {
+			request.setAttribute("res", false);
+		}
 		
 		doGet(request, response);
 	}

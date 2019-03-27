@@ -29,6 +29,7 @@
                             <div class="form-group">
                                 <label for="computerName">Computer name</label>
                                 <input type="text" class="form-control" id="computerName" placeholder="Computer name" name="computerName">
+                           		<span id="emptyNameError" class="error">Computer name must be set.</span>
                             </div>
                             <div class="form-group">
                                 <label for="introduced">Introduced date</label>
@@ -49,7 +50,7 @@
                             </div>                  
                         </fieldset>
                         <div class="actions pull-right">
-                            <input type="submit" value="Add" class="btn btn-primary">
+                            <input type="submit" id="submit" value="Add" class="btn btn-primary">
                             or
                             <a href="./dashboard" class="btn btn-default">Cancel</a>
                         </div>
@@ -61,5 +62,7 @@
             </c:if>
         </div>
     </section>
+    <script src="./js/jquery.min.js"></script>
+    <script src="./js/validator.js"></script>
 </body>
 </html>

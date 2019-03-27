@@ -20,8 +20,8 @@ public class CompanyDAO {
 	private static CompanyDAO myInstance = new CompanyDAO(DAOFactory.getInstance());
 	private DAOFactory factory;
 
-	private final String findQuery = "SELECT * FROM company WHERE id = ?";
-	private final String listQuery = "SELECT * FROM company";
+	private final String findQuery = "SELECT id,name FROM company WHERE id = ?";
+	private final String listQuery = "SELECT id,name FROM company";
 
 	private CompanyDAO(DAOFactory conn) {
 		this.factory = conn;

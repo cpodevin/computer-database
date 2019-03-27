@@ -27,8 +27,8 @@ public class ComputerDAO {
 	private final String createQuery = "INSERT INTO computer (name,introduced,discontinued,company_id) VALUES (?,?,?,?)";
 	private final String deleteQuery = "DELETE FROM computer WHERE id = ?";
 	private final String updateQuery = "UPDATE computer SET name = ? , introduced = ? , discontinued = ? , company_id = ? WHERE id = ?";
-	private final String findQuery = "SELECT * FROM computer WHERE id = ?";		
-	private final String listQuery = "SELECT * FROM computer";
+	private final String findQuery = "SELECT id,name,introduced,discontinued,company_id FROM computer WHERE id = ?";		
+	private final String listQuery = "SELECT id,name,introduced,discontinued,company_id FROM computer";
 	
 	private ComputerDAO(DAOFactory conn) {
 		this.factory = conn;

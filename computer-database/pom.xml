@@ -20,6 +20,7 @@
     <servlet.version>4.0.1</servlet.version>
     <servlet-jsp.version>2.2.1-b03</servlet-jsp.version>
     <servlet-jstl.version>1.2</servlet-jstl.version>
+    <hikari.version>3.3.1</hikari.version>
   </properties>
 
   <dependencies>
@@ -74,6 +75,12 @@
     	<artifactId>jstl</artifactId>
     	<version>${servlet-jstl.version}</version>
     </dependency>
+    <dependency>
+    	<groupId>com.zaxxer</groupId>
+    	<artifactId>HikariCP</artifactId>
+    	<version>${hikari.version}</version>
+    	<scope>compile</scope>
+    </dependency>
   </dependencies>
   <build>
   	<plugins>
@@ -107,5 +114,14 @@
             <artifactId>maven-war-plugin</artifactId>
         </plugin>
   	</plugins>
+  	<filters>
+  		<filter>src/main/resources/properties/dao.properties</filter>
+  	</filters>
+  	<resources>
+  		<resource>
+  			<directory>src/main/resources/properties</directory>
+  			<filtering>true</filtering>
+  		</resource>
+  	</resources>
   </build>
 </project>

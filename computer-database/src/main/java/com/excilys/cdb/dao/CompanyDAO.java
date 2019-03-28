@@ -47,7 +47,7 @@ public class CompanyDAO {
 	}
 	
 	public Optional<Company> find(int id) {
-		try (Connection conn = factory.getConn(); 
+		try (Connection conn = DataSource.getConn(); 
 				PreparedStatement statement = conn.prepareStatement(findQuery)) {			
 			statement.setInt(1, id);
 			ResultSet result = statement.executeQuery();
@@ -63,7 +63,7 @@ public class CompanyDAO {
 	public List<Company> list() {
 		List<Company> resList = new ArrayList<>();
 		
-		try (Connection conn = factory.getConn(); 
+		try (Connection conn = DataSource.getConn(); 
 				PreparedStatement statement = conn.prepareStatement(listQuery)) {		
 			ResultSet result = statement.executeQuery();
 			while (result.next()) {

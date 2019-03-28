@@ -24,6 +24,10 @@ public class Service {
 		return DAOFactory.getInstance().getCompanyDAO().list();
 	}
 	
+	public Optional<Computer> findComputer(int id) throws DAOException {
+		return DAOFactory.getInstance().getComputerDAO().find(id);
+	}
+	
 	public List<Computer> getComputerList() throws DAOException {
 		return DAOFactory.getInstance().getComputerDAO().list();
 	}
@@ -31,6 +35,11 @@ public class Service {
 	public void createComputer(Computer computer) throws DAOException, InvalidInputException {
 		checkComputer(computer);
 		DAOFactory.getInstance().getComputerDAO().create(computer);
+	}
+	
+	public void updateComputer(Computer computer) throws DAOException, InvalidInputException {
+		checkComputer(computer);
+		DAOFactory.getInstance().getComputerDAO().update(computer);
 	}
 	
 	private void checkComputer(Computer computer) throws InvalidInputException {

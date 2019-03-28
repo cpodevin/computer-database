@@ -38,7 +38,7 @@ public class ComputerDAO {
 	}
 	
 	public void create(Computer computer) throws DAOException {	
-		try (Connection conn = factory.getConn(); 
+		try (Connection conn = DataSource.getConn(); 
 				PreparedStatement statement = conn.prepareStatement(createQuery,Statement.RETURN_GENERATED_KEYS)) {
 			statement.setString(1, computer.getName());
 			statement.setDate(2, computer.getIntroduced());
@@ -53,6 +53,7 @@ public class ComputerDAO {
 			if (result.next()) {
 				computer.setId(result.getInt(1));
 			}
+			conn.commit();
 		} catch (SQLException e) {
 			throw new DAOException(e);
 		}
@@ -60,19 +61,20 @@ public class ComputerDAO {
 	}
 	
 	public void delete(Computer computer) throws DAOException {
-		try (Connection conn = factory.getConn(); 
+		try (Connection conn = DataSource.getConn(); 
 				PreparedStatement statement = conn.prepareStatement(deleteQuery)) {		
 			statement.setInt(1,  computer.getId());
 			if (statement.executeUpdate()!=1) {
 				throw new DAOException("No line found to delete.");
 			}
+			conn.commit();
 		} catch (SQLException e) {
 			throw new DAOException(e);
 		}		
 	}
 
 	public void update(Computer computer) throws DAOException {
-		try (Connection conn = factory.getConn(); 
+		try (Connection conn = DataSource.getConn(); 
 				PreparedStatement statement = conn.prepareStatement(updateQuery)) {		
 			statement.setString(1, computer.getName());
 			statement.setDate(2, computer.getIntroduced());
@@ -86,13 +88,14 @@ public class ComputerDAO {
 			if (statement.executeUpdate()!=1) {
 				throw new DAOException("No line found to update.");
 			}
+			conn.commit();
 		} catch (SQLException e) {
 			throw new DAOException(e);
 		}		
 	}
 	
 	public Optional<Computer> find(int id) throws DAOException {
-		try (Connection conn = factory.getConn(); 
+		try (Connection conn = DataSource.getConn(); 
 				PreparedStatement statement = conn.prepareStatement(findQuery)) {
 			statement.setInt(1, id);
 			ResultSet result = statement.executeQuery();
@@ -116,7 +119,7 @@ public class ComputerDAO {
 		
 		List<Computer> resList = new ArrayList<>();
 		
-		try (Connection conn = factory.getConn(); 
+		try (Connection conn = DataSource.getConn(); 
 				PreparedStatement statement = conn.prepareStatement(listQuery)) {		
 			ResultSet result = statement.executeQuery();
 			while (result.next()) {

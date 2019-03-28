@@ -2,6 +2,7 @@ package com.excilys.cdb.servlet;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -14,45 +15,62 @@ import com.excilys.cdb.dto.ComputerMapper;
 import com.excilys.cdb.exception.DAOException;
 import com.excilys.cdb.exception.InvalidInputException;
 import com.excilys.cdb.model.Company;
+import com.excilys.cdb.model.Computer;
 import com.excilys.cdb.service.Service;
 
 /**
- * Servlet implementation class AddComputer
+ * Servlet implementation class EditComputer
  */
-@WebServlet("/addComputer")
-public class AddComputer extends HttpServlet {
-	private static final long serialVersionUID = 2L;
-	
+@WebServlet("/editComputer")
+public class EditComputer extends HttpServlet {
+	private static final long serialVersionUID = 3L;
+       
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public AddComputer() {
+    public EditComputer() {
         super();
+        // TODO Auto-generated constructor stub
     }
 
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		Service service = new Service();
-		List<Company> list = service.getCompanyList();
-		request.setAttribute("list", list);
 		
-		getServletContext().getRequestDispatcher("/views/addComputer.jsp").forward(request, response);
+		Service service = new Service();
+		try {
+			int id = Integer.parseInt(request.getParameter("id"));
+			Optional<Computer> computer = service.findComputer(id);
+			if (computer.isPresent()) {
+				ComputerDTO dto = new ComputerDTO(computer.get());
+				request.setAttribute("computer", dto);
+			} else {
+				request.setAttribute("res", "Error while looking for your computer");
+			}
+		} catch (NumberFormatException | DAOException e) {
+			request.setAttribute("res", "Error while looking for your computer");
+		}
+		
+		List<Company> list = service.getCompanyList();
+		request.setAttribute("list_company", list);
+
+		getServletContext().getRequestDispatcher("/views/editComputer.jsp").forward(request, response);
 	}
 
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
-	
+
+		String id = request.getParameter("id");
 		String computerName = request.getParameter("computerName");
 		String introduced = request.getParameter("introduced");
 		String discontinued = request.getParameter("discontinued");
 		String companyId = request.getParameter("companyId");
 		
 		ComputerDTO dto = new ComputerDTO();
+		dto.setId(Integer.parseInt(id));
 		dto.setName(computerName);
 		dto.setIntroduced(introduced);
 		dto.setDiscontinued(discontinued);
@@ -61,7 +79,7 @@ public class AddComputer extends HttpServlet {
 		Service service = new Service();
 		ComputerMapper mapper = new ComputerMapper();
 		try {
-			service.createComputer(mapper.getComputer(dto));
+			service.updateComputer(mapper.getComputer(dto));
 			request.setAttribute("res", "Success");
 		} catch (DAOException e) {
 			request.setAttribute("res", "DB Error");
@@ -71,5 +89,5 @@ public class AddComputer extends HttpServlet {
 		
 		doGet(request, response);
 	}
-	
+
 }

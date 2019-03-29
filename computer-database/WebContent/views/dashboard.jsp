@@ -27,7 +27,7 @@
             </h1>
             <div id="actions" class="form-horizontal">
                 <div class="pull-left">
-                    <form id="searchForm" action="#" method="GET" class="form-inline">
+                    <form id="searchForm" action="./dashboard" method="GET" class="form-inline">
 
                         <input type="search" id="searchbox" name="search" class="form-control" placeholder="Search name" />
                         <input type="submit" id="searchsubmit" value="Filter by name"
@@ -83,7 +83,7 @@
 	                <c:forEach var="computer" items="${list}">
 	                    <tr>
 	                        <td class="editMode">
-	                            <input type="checkbox" name="cb" class="cb" value="0">
+	                            <input type="checkbox" name="cb" class="cb" value="${computer.id}">
 	                        </td>
 	                        <td>
 	                            <a href="./editComputer?id=${computer.id}" onclick="">${computer.name}</a>
@@ -120,9 +120,9 @@
         </div>
 
     </footer>
-<script src="../js/jquery.min.js"></script>
-<script src="../js/bootstrap.min.js"></script>
-<script src="../js/dashboard.js"></script>
+<script src="./js/jquery.min.js"></script>
+<script src="./js/bootstrap.min.js"></script>
+<script src="./js/dashboard.js"></script>
 
 </body>
 </html>

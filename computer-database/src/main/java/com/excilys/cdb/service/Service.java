@@ -42,6 +42,11 @@ public class Service {
 		DAOFactory.getInstance().getComputerDAO().update(computer);
 	}
 	
+	public void deleteComputer(int id) throws DAOException {
+		DAOFactory.getInstance().getComputerDAO().delete(new Computer(id,""));
+	}
+	
+	
 	private void checkComputer(Computer computer) throws InvalidInputException {
 		if ("".equals(computer.getName().trim())) {
 			throw new InvalidInputException("Computer name can't be empty.");

@@ -10,6 +10,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.excilys.cdb.dto.ComputerDTO;
 import com.excilys.cdb.exception.DAOException;
 import com.excilys.cdb.model.Computer;
@@ -70,7 +73,18 @@ public class Dashboard extends HttpServlet {
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
+		
+		Service service = new Service();
+		
+		String selection = request.getParameter("selection");
+		String[] idList = selection.split(",");
+		try {
+			for (String id : idList) {
+				service.deleteComputer(Integer.parseInt(id));
+			}
+		} catch (DAOException e){
+			/* TODO something*/
+		}
 		doGet(request, response);
 	}
 

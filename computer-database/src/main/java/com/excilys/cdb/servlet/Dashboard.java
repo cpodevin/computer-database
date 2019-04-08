@@ -17,7 +17,7 @@ import com.excilys.cdb.dto.ComputerDTO;
 import com.excilys.cdb.exception.DAOException;
 import com.excilys.cdb.model.Computer;
 import com.excilys.cdb.model.Page;
-import com.excilys.cdb.service.Service;
+import com.excilys.cdb.service.ComputerService;
 
 /**
  * Servlet implementation class Dashboard
@@ -43,10 +43,12 @@ public class Dashboard extends HttpServlet {
 	    
 	    String search = request.getParameterMap().containsKey("search") ? request.getParameter("search") : "";
 	    
+	    int sort = request.getParameterMap().containsKey("sort") ? Integer.parseInt(request.getParameter("sort")) : 0;
+	    
 	    
 	    try {
-			Service service = new Service();
-			List<Computer> computerList = service.searchComputer(search);
+			ComputerService service = new ComputerService();
+			List<Computer> computerList = service.search(search,sort);
 			List<ComputerDTO> computerData = new ArrayList<>();
 			for (Computer computer : computerList) {
 				computerData.add(new ComputerDTO(computer));
@@ -81,6 +83,7 @@ public class Dashboard extends HttpServlet {
 		request.setAttribute("current", displayer.getIndex()+1);
 		request.setAttribute("size", displayer.getPageSize());
 		request.setAttribute("search", search);
+		request.setAttribute("sort", sort);
 		
 		getServletContext().getRequestDispatcher("/views/dashboard.jsp").forward(request, response);
 	}
@@ -90,13 +93,13 @@ public class Dashboard extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
-		Service service = new Service();
+		ComputerService service = new ComputerService();
 		
 		String selection = request.getParameter("selection");
 		String[] idList = selection.split(",");
 		try {
 			for (String id : idList) {
-				service.deleteComputer(Integer.parseInt(id));
+				service.delete(Integer.parseInt(id));
 			}
 		} catch (DAOException e){
 			/* TODO something*/

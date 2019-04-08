@@ -1,17 +1,16 @@
 package com.excilys.cdb.dto;
 
 import java.sql.Date;
-import java.text.SimpleDateFormat;
 
 import com.excilys.cdb.model.Computer;
-import com.excilys.cdb.service.Service;
+import com.excilys.cdb.service.CompanyService;
 
 public class ComputerMapper {
 		
-	private Service service;
+	private CompanyService service;
 	
 	public ComputerMapper() {
-		service = new Service();
+		service = new CompanyService();
 	}
 	
 	public Computer getComputer(ComputerDTO dto) {
@@ -30,7 +29,7 @@ public class ComputerMapper {
 		} catch (IllegalArgumentException e) {
 			res.setDiscontinued(null);
 		}
-		res.setCompany(service.findCompany(dto.getCompanyId()));
+		res.setCompany(service.find(dto.getCompanyId()));
 		
 		return res;
 	}

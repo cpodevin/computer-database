@@ -14,7 +14,8 @@ import com.excilys.cdb.dto.ComputerMapper;
 import com.excilys.cdb.exception.DAOException;
 import com.excilys.cdb.exception.InvalidInputException;
 import com.excilys.cdb.model.Company;
-import com.excilys.cdb.service.Service;
+import com.excilys.cdb.service.CompanyService;
+import com.excilys.cdb.service.ComputerService;
 
 /**
  * Servlet implementation class AddComputer
@@ -34,8 +35,8 @@ public class AddComputer extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		Service service = new Service();
-		List<Company> list = service.getCompanyList();
+		CompanyService service = new CompanyService();
+		List<Company> list = service.getList();
 		request.setAttribute("list", list);
 		
 		getServletContext().getRequestDispatcher("/views/addComputer.jsp").forward(request, response);
@@ -58,10 +59,10 @@ public class AddComputer extends HttpServlet {
 		dto.setDiscontinued(discontinued);
 		dto.setCompanyId(Integer.parseInt(companyId));
 		
-		Service service = new Service();
+		ComputerService service = new ComputerService();
 		ComputerMapper mapper = new ComputerMapper();
 		try {
-			service.createComputer(mapper.getComputer(dto));
+			service.create(mapper.getComputer(dto));
 			request.setAttribute("res", "Success");
 		} catch (DAOException e) {
 			request.setAttribute("res", "DB Error");

@@ -31,6 +31,10 @@ public class ComputerDAO {
 		this.factory = conn;
 	}
 	
+	public enum Sort {
+		None, NameAsc, NameDesc, IntroducedAsc, IntroducedDesc, DiscontinuedAsc, DiscontinuedDesc, CompanyAsc, CompanyDesc
+	};
+	
 	public static ComputerDAO getInstance(DAOFactory conn) {
 		if (myInstance == null) {
 			myInstance = new ComputerDAO(conn);		
@@ -125,12 +129,42 @@ public class ComputerDAO {
 		return resList;
 	}
 	
-	public List<Computer> search(String search) throws DAOException {
+	public List<Computer> search(String search, Sort sort) throws DAOException {
 		
 		List<Computer> resList = new ArrayList<>();
 		
+		String query = searchQuery;
+		
+		switch (sort) {
+		case NameAsc :
+			query += " ORDER BY CASE WHEN c.name IS null THEN 1 ELSE 0 END, c.name";
+			break;
+		case NameDesc :
+			query += " ORDER BY c.name DESC";
+			break;
+		case IntroducedAsc :
+			query += " ORDER BY CASE WHEN c.introduced IS null THEN 1 ELSE 0 END, c.introduced";
+			break;
+		case IntroducedDesc :
+			query += " ORDER BY c.introduced DESC";
+			break;
+		case DiscontinuedAsc :
+			query += " ORDER BY CASE WHEN c.discontinued IS null THEN 1 ELSE 0 END, c.discontinued";
+			break;
+		case DiscontinuedDesc :
+			query += " ORDER BY c.discontinued DESC";
+			break;	
+		case CompanyAsc :
+			query += " ORDER BY CASE WHEN d.name IS null THEN 1 ELSE 0 END, d.name";
+			break;
+		case CompanyDesc :
+			query += " ORDER BY d.name DESC";
+			break;
+		default :
+		}
+		
 		try (Connection conn = DataSource.getConn(); 
-				PreparedStatement statement = conn.prepareStatement(searchQuery)) {
+				PreparedStatement statement = conn.prepareStatement(query)) {
 			statement.setString(1, "%" + search + "%");
 			statement.setString(2, "%" + search + "%");
 			ResultSet result = statement.executeQuery();

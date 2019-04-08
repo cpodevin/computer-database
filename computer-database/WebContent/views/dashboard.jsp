@@ -10,7 +10,7 @@
 <meta charset="utf-8">
 <!-- Bootstrap -->
 <link href="./css/bootstrap.min.css" rel="stylesheet" media="screen">
-<link href="./css/font-awesome.css" rel="stylesheet" media="screen">
+<link href="./css/font-awesome.min.css" rel="stylesheet" media="screen">
 <link href="./css/main.css" rel="stylesheet" media="screen">
 </head>
 <body>
@@ -62,17 +62,33 @@
                         </th>
                         <th>
                             Computer name
+                            <span > 
+                            	<a href="./dashboard?sort=1&search=${search}"><i class="fas fa-sort-up"></i></a>
+                           	 	<a href="./dashboard?sort=2&search=${search}"><i class="fas fa-sort-down"></i></a>
+                           	 </span>
                         </th>
                         <th>
                             Introduced date
+                            <span > 
+                            	<a href="./dashboard?sort=3&search=${search}"><i class="fas fa-sort-up"></i></a>
+                           	 	<a href="./dashboard?sort=4&search=${search}"><i class="fas fa-sort-down"></i></a>
+                           	 </span>
                         </th>
                         <!-- Table header for Discontinued Date -->
                         <th>
                             Discontinued date
+                            <span > 
+                            	<a href="./dashboard?sort=5&search=${search}"><i class="fas fa-sort-up"></i></a>
+                           	 	<a href="./dashboard?sort=6&search=${search}"><i class="fas fa-sort-down"></i></a>
+                           	 </span>
                         </th>
                         <!-- Table header for Company -->
                         <th>
                             Company
+                            <span > 
+                            	<a href="./dashboard?sort=7&search=${search}"><i class="fas fa-sort-up"></i></a>
+                           	 	<a href="./dashboard?sort=8&search=${search}"><i class="fas fa-sort-down"></i></a>
+                           	 </span>
                         </th>
 
                     </tr>
@@ -101,22 +117,22 @@
     <footer class="navbar-fixed-bottom">
         <div class="container text-center">
 			<ul class="pagination">
-				<li><a href="./dashboard?page=${current-1}&size=${size}&search=${search}" aria-label="Previous"> <span
+				<li><a href="./dashboard?page=${current-1}&size=${size}&search=${search}&sort=${sort}" aria-label="Previous"> <span
 						aria-hidden="true">&laquo;</span>
 				</a></li>
-				<li><a href="./dashboard?page=1&size=${size}&search=${search}">1</a></li>
-				<li><a href="./dashboard?page=2&size=${size}&search=${search}">2</a></li>
-				<li><a href="./dashboard?page=3&size=${size}&search=${search}">3</a></li>
-				<li><a href="./dashboard?page=4&size=${size}&search=${search}">4</a></li>
-				<li><a href="./dashboard?page=5&size=${size}&search=${search}">5</a></li>
-				<li><a href="./dashboard?page=${current+1}&size=${size}&search=${search}" aria-label="Next"> <span aria-hidden="true">&raquo;</span>
+				<li><a href="./dashboard?page=1&size=${size}&search=${search}&sort=${sort}">1</a></li>
+				<li><a href="./dashboard?page=2&size=${size}&search=${search}&sort=${sort}">2</a></li>
+				<li><a href="./dashboard?page=3&size=${size}&search=${search}&sort=${sort}">3</a></li>
+				<li><a href="./dashboard?page=4&size=${size}&search=${search}&sort=${sort}">4</a></li>
+				<li><a href="./dashboard?page=5&size=${size}&search=${search}&sort=${sort}">5</a></li>
+				<li><a href="./dashboard?page=${current+1}&size=${size}&search=${search}&sort=${sort}" aria-label="Next"> <span aria-hidden="true">&raquo;</span>
 				</a></li>
 			</ul>
 		</div>
         <div class="btn-group btn-group-sm pull-right" role="group" >
-            <a href="./dashboard?size=10&search=${search}"><button type="button" class="btn btn-default">10</button></a>
-            <a href="./dashboard?size=50&search=${search}"><button type="button" class="btn btn-default">50</button></a>
-            <a href="./dashboard?size=100&search=${search}"><button type="button" class="btn btn-default">100</button></a>
+            <a href="./dashboard?size=10&search=${search}&sort=${sort}"><button type="button" class="btn btn-default">10</button></a>
+            <a href="./dashboard?size=50&search=${search}&sort=${sort}"><button type="button" class="btn btn-default">50</button></a>
+            <a href="./dashboard?size=100&search=${search}&sort=${sort}"><button type="button" class="btn btn-default">100</button></a>
         </div>
 
     </footer>

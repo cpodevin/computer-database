@@ -101,22 +101,22 @@
     <footer class="navbar-fixed-bottom">
         <div class="container text-center">
 			<ul class="pagination">
-				<li><a href="./dashboard?page=${current-1}&size=${size}" aria-label="Previous"> <span
+				<li><a href="./dashboard?page=${current-1}&size=${size}&search=${search}" aria-label="Previous"> <span
 						aria-hidden="true">&laquo;</span>
 				</a></li>
-				<li><a href="./dashboard?page=1&size=${size}">1</a></li>
-				<li><a href="./dashboard?page=2&size=${size}">2</a></li>
-				<li><a href="./dashboard?page=3&size=${size}">3</a></li>
-				<li><a href="./dashboard?page=4&size=${size}">4</a></li>
-				<li><a href="./dashboard?page=5&size=${size}">5</a></li>
-				<li><a href="./dashboard?page=${current+1}&size=${size}" aria-label="Next"> <span aria-hidden="true">&raquo;</span>
+				<li><a href="./dashboard?page=1&size=${size}&search=${search}">1</a></li>
+				<li><a href="./dashboard?page=2&size=${size}&search=${search}">2</a></li>
+				<li><a href="./dashboard?page=3&size=${size}&search=${search}">3</a></li>
+				<li><a href="./dashboard?page=4&size=${size}&search=${search}">4</a></li>
+				<li><a href="./dashboard?page=5&size=${size}&search=${search}">5</a></li>
+				<li><a href="./dashboard?page=${current+1}&size=${size}&search=${search}" aria-label="Next"> <span aria-hidden="true">&raquo;</span>
 				</a></li>
 			</ul>
 		</div>
         <div class="btn-group btn-group-sm pull-right" role="group" >
-            <a href="./dashboard?size=10"><button type="button" class="btn btn-default">10</button></a>
-            <a href="./dashboard?size=50"><button type="button" class="btn btn-default">50</button></a>
-            <a href="./dashboard?size=100"><button type="button" class="btn btn-default">100</button></a>
+            <a href="./dashboard?size=10&search=${search}"><button type="button" class="btn btn-default">10</button></a>
+            <a href="./dashboard?size=50&search=${search}"><button type="button" class="btn btn-default">50</button></a>
+            <a href="./dashboard?size=100&search=${search}"><button type="button" class="btn btn-default">100</button></a>
         </div>
 
     </footer>

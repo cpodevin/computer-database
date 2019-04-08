@@ -11,7 +11,7 @@ public class DataSource {
 	private static HikariConfig config = new HikariConfig(/*"src/main/resources/properties/hikari.properties"*/);
 	
 	static {
-		config.setJdbcUrl("jdbc:mysql://127.0.0.1:3306/computer-database-db");
+		config.setJdbcUrl("jdbc:mysql://127.0.0.1:3306/computer-database-db?serverTimezone=UTC");
 		config.setUsername("admincdb");
 		config.setPassword("qwerty1234");
 		config.setConnectionTimeout(4000);

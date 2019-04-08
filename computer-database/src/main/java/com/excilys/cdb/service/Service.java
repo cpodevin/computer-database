@@ -27,6 +27,10 @@ public class Service {
 	public Optional<Computer> findComputer(int id) throws DAOException {
 		return DAOFactory.getInstance().getComputerDAO().find(id);
 	}
+	public List<Computer> searchComputer(String search) throws DAOException {
+		return DAOFactory.getInstance().getComputerDAO().search(search);
+	}
+	
 	
 	public List<Computer> getComputerList() throws DAOException {
 		return DAOFactory.getInstance().getComputerDAO().list();

@@ -26,7 +26,7 @@ import com.excilys.cdb.service.Service;
 public class Dashboard extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	
-    private Page<ComputerDTO> displayer;
+
     /**
      * @see HttpServlet#HttpServlet()
      */
@@ -38,9 +38,20 @@ public class Dashboard extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-
-		try {
-			getData();
+	    Page<ComputerDTO> displayer = new Page<ComputerDTO>(new ArrayList<>());
+		
+	    
+	    String search = request.getParameterMap().containsKey("search") ? request.getParameter("search") : "";
+	    
+	    
+	    try {
+			Service service = new Service();
+			List<Computer> computerList = service.searchComputer(search);
+			List<ComputerDTO> computerData = new ArrayList<>();
+			for (Computer computer : computerList) {
+				computerData.add(new ComputerDTO(computer));
+			}
+			displayer = new Page<>(computerData,10);
 		} catch (DAOException e) {
 			response.sendRedirect("/views/500.html");
 		}
@@ -58,13 +69,18 @@ public class Dashboard extends HttpServlet {
 		}
 		
 		if (!displayer.isLegal()) {
-			displayer.setIndex(0);
+			if (displayer.getIndex()==-1) {
+				displayer.setIndex((displayer.getNbLine()-1)/displayer.getPageSize());
+			} else {
+				displayer.setIndex(0);
+			}	
 		}
 		
 		request.setAttribute("nbPage", displayer.getNbLine());
 		request.setAttribute("list",displayer.getPage());
 		request.setAttribute("current", displayer.getIndex()+1);
 		request.setAttribute("size", displayer.getPageSize());
+		request.setAttribute("search", search);
 		
 		getServletContext().getRequestDispatcher("/views/dashboard.jsp").forward(request, response);
 	}
@@ -88,14 +104,4 @@ public class Dashboard extends HttpServlet {
 		doGet(request, response);
 	}
 
-	private void getData() throws DAOException {
-		Service service = new Service();
-		List<Computer> computerList = service.getComputerList();
-		List<ComputerDTO> computerData = new ArrayList<>();
-		for (Computer computer : computerList) {
-			computerData.add(new ComputerDTO(computer));
-		}
-		displayer = new Page<>(computerData,10);
-	}
-	
 }

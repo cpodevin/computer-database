@@ -19,7 +19,7 @@ public class DAOFactory {
 	
 	private static final String propertiesFile = "src/main/resources/properties/dao.properties";
 
-	private String url = "jdbc:mysql://127.0.0.1:3306/computer-database-db";
+	private String url = "jdbc:mysql://127.0.0.1:3306/computer-database-db?serverTimezone=UTC";
 	private String username = "admincdb";
 	private String password = "qwerty1234";
 	private String driver = "com.mysql.jdbc.Driver";

@@ -23,9 +23,9 @@ public class ComputerDAO {
 	private final String createQuery = "INSERT INTO computer (name,introduced,discontinued,company_id) VALUES (?,?,?,?)";
 	private final String deleteQuery = "DELETE FROM computer WHERE id = ?";
 	private final String updateQuery = "UPDATE computer SET name = ? , introduced = ? , discontinued = ? , company_id = ? WHERE id = ?";
-	private final String findQuery = "SELECT id,name,introduced,discontinued,company_id FROM computer WHERE id = ?";		
-	private final String listQuery = "SELECT id,name,introduced,discontinued,company_id FROM computer";
-	private final String searchQuery = "SELECT id,name,introduced,discontinued,company_id FROM computer WHERE name LIKE ?";
+	private final String findQuery = "SELECT c.id,c.name,c.introduced,c.discontinued,c.company_id,d.name FROM computer c LEFT JOIN company d ON c.company_id=d.id WHERE c.id = ?";		
+	private final String listQuery = "SELECT c.id,c.name,c.introduced,c.discontinued,c.company_id,d.name FROM computer c LEFT JOIN company d ON c.company_id=d.id";
+	private final String searchQuery = "SELECT c.id,c.name,c.introduced,c.discontinued,c.company_id,d.name FROM computer c LEFT JOIN company d ON c.company_id=d.id WHERE c.name LIKE ? OR d.name LIKE ?";
 	
 	private ComputerDAO(DAOFactory conn) {
 		this.factory = conn;
@@ -101,8 +101,7 @@ public class ComputerDAO {
 			statement.setInt(1, id);
 			ResultSet result = statement.executeQuery();
 			if (result.next()) {
-				Optional<Company> company = DAOFactory.getInstance().getCompanyDAO().find(result.getInt("company_id"));;
-				return Optional.of(new Computer(result.getInt("id"), result.getString("name"), result.getDate("introduced"), result.getDate("discontinued"), company));
+				return Optional.of(new Computer(result.getInt("c.id"), result.getString("c.name"), result.getDate("c.introduced"), result.getDate("c.discontinued"), result.getInt("c.company_id")!=0 ? Optional.of(new Company(result.getInt("c.company_id"),result.getString("d.name"))) : Optional.empty()));
 			}
 		} catch (SQLException e) {
 			throw new DAOException(e);
@@ -111,12 +110,6 @@ public class ComputerDAO {
 	}
 	
 	public List<Computer> list() throws DAOException {
-
-		List<Company> companyList = DAOFactory.getInstance().getCompanyDAO().list();
-		Map<Integer,Company> companyMap  = new HashMap<>();
-		for (Company company : companyList) {
-			companyMap.put(company.getId(),company);
-		}
 		
 		List<Computer> resList = new ArrayList<>();
 		
@@ -124,8 +117,7 @@ public class ComputerDAO {
 				PreparedStatement statement = conn.prepareStatement(listQuery)) {		
 			ResultSet result = statement.executeQuery();
 			while (result.next()) {
-				Optional<Company> company = companyMap.containsKey(result.getInt("company_id")) ? Optional.of(companyMap.get(result.getInt("company_id"))) : Optional.empty();
-				resList.add(new Computer(result.getInt("id"), result.getString("name"), result.getDate("introduced"), result.getDate("discontinued"), company));
+				resList.add(new Computer(result.getInt("c.id"), result.getString("c.name"), result.getDate("c.introduced"), result.getDate("c.discontinued"), result.getInt("c.company_id")!=0 ? Optional.of(new Company(result.getInt("c.company_id"),result.getString("d.name"))) : Optional.empty()));
 			}
 		} catch (SQLException e) {
 			throw new DAOException(e);
@@ -134,22 +126,16 @@ public class ComputerDAO {
 	}
 	
 	public List<Computer> search(String search) throws DAOException {
-
-		List<Company> companyList = DAOFactory.getInstance().getCompanyDAO().list();
-		Map<Integer,Company> companyMap  = new HashMap<>();
-		for (Company company : companyList) {
-			companyMap.put(company.getId(),company);
-		}
 		
 		List<Computer> resList = new ArrayList<>();
 		
 		try (Connection conn = DataSource.getConn(); 
 				PreparedStatement statement = conn.prepareStatement(searchQuery)) {
 			statement.setString(1, "%" + search + "%");
+			statement.setString(2, "%" + search + "%");
 			ResultSet result = statement.executeQuery();
 			while (result.next()) {
-				Optional<Company> company = companyMap.containsKey(result.getInt("company_id")) ? Optional.of(companyMap.get(result.getInt("company_id"))) : Optional.empty();
-				resList.add(new Computer(result.getInt("id"), result.getString("name"), result.getDate("introduced"), result.getDate("discontinued"), company));
+				resList.add(new Computer(result.getInt("c.id"), result.getString("c.name"), result.getDate("c.introduced"), result.getDate("c.discontinued"), result.getInt("c.company_id")!=0 ? Optional.of(new Company(result.getInt("c.company_id"),result.getString("d.name"))) : Optional.empty()));
 			}
 		} catch (SQLException e) {
 			throw new DAOException(e);

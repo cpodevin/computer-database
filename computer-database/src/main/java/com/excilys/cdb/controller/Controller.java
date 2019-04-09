@@ -5,9 +5,12 @@ import java.util.Optional;
 
 import com.excilys.cdb.dao.DAOFactory;
 import com.excilys.cdb.exception.DAOException;
+import com.excilys.cdb.exception.InvalidInputException;
 import com.excilys.cdb.model.Company;
 import com.excilys.cdb.model.Computer;
 import com.excilys.cdb.model.Page;
+import com.excilys.cdb.service.CompanyService;
+import com.excilys.cdb.service.ComputerService;
 import com.excilys.cdb.vue.CLI;
 
 public class Controller {
@@ -31,13 +34,15 @@ public class Controller {
 				break;
 			case ComputerList :
 				try {
-					displayer.printComputerList(new Page<Computer>(DAOFactory.getInstance().getComputerDAO().list()));
+					ComputerService service = new ComputerService();
+					displayer.printComputerList(new Page<Computer>(service.getList()));
 				} catch (DAOException e) {
 					displayer.printComputerList(new Page<Computer>(new ArrayList<Computer>()));
 				}
 				break;
 			case CompanyList :
-				displayer.printCompanyList(new Page<Company>(DAOFactory.getInstance().getCompanyDAO().list()));
+				CompanyService service = new CompanyService();
+				displayer.printCompanyList(new Page<Company>(service.getList()));
 				break;
 			case ComputerDetails :
 				details();
@@ -51,6 +56,8 @@ public class Controller {
 			case DeleteComputer :
 				delete();
 				break;
+			case DeleteCompany :
+				deleteCompany();
 			default :
 				System.out.println("Your entry match no proposition.");
 			}
@@ -63,12 +70,12 @@ public class Controller {
 	
 	private void details() {
 		int input;
-		
+		ComputerService service = new ComputerService();
 		input = displayer.enterId();
 
 		if (input!=0) {
 			try {
-				displayer.printComputerDetails(DAOFactory.getInstance().getComputerDAO().find(input));
+				displayer.printComputerDetails(service.find(input));
 			} catch (DAOException e) {
 				displayer.printComputerDetails(Optional.empty());
 			}
@@ -79,17 +86,20 @@ public class Controller {
 	
 	private void create() {	
 		Optional<Computer> computer = displayer.enterComputer(true);
-		
+		CompanyService companyService = new CompanyService();
+		ComputerService computerService = new ComputerService();
 		
 		if (computer.isPresent()) {
-			Optional<Company> company = DAOFactory.getInstance().getCompanyDAO().find(displayer.enterCompanyId());
+			Optional<Company> company = companyService.find(displayer.enterCompanyId());
 			computer.get().setCompany(company);
 			
 			try {
-				DAOFactory.getInstance().getComputerDAO().create(computer.get());
+				computerService.create(computer.get());
 				displayer.computerCreation(true,computer.get().getId());
 			} catch (DAOException e) {
 				displayer.computerCreation(false,  0);
+			} catch (InvalidInputException e) {
+				System.out.println("Invalid Input");
 			}
 			
 		} else {
@@ -102,16 +112,20 @@ public class Controller {
 
 	private void update() {	
 		Optional<Computer> computer = displayer.enterComputer(false);
+		CompanyService companyService = new CompanyService();
+		ComputerService computerService = new ComputerService();
 		
 		if (computer.isPresent()) {
-			Optional<Company> company = DAOFactory.getInstance().getCompanyDAO().find(displayer.enterCompanyId());
+			Optional<Company> company = companyService.find(displayer.enterCompanyId());
 			computer.get().setCompany(company);
 			
 			try {	
-				DAOFactory.getInstance().getComputerDAO().update(computer.get());		
+				computerService.update(computer.get());		
 				displayer.computerUpdate(true,computer.get().getId());
 			} catch (DAOException e) {
 				displayer.computerUpdate(false,  0);
+			} catch (InvalidInputException e) {
+				System.out.println("Invalid Input");
 			}
 		} else {
 			displayer.computerUpdate(false, 0);
@@ -122,27 +136,42 @@ public class Controller {
 	
 	private void delete() {	
 		
-		int input = displayer.enterId();		
+		int input = displayer.enterId();
+		ComputerService service = new ComputerService();
 		
 		if (input != 0) {
-			Optional<Computer> computer;
+
 			try {
-				computer = DAOFactory.getInstance().getComputerDAO().find(input);
-			} catch (DAOException e1) {
-				computer = Optional.empty();
+				service.delete(input);
+				displayer.computerDeletion(true, input);
+			} catch (DAOException e) {
+				displayer.computerDeletion(false,0);
 			}
-			if (computer.isPresent()) {
-				 try {
-					 DAOFactory.getInstance().getComputerDAO().delete(computer.get());
-					 displayer.computerDeletion(true, computer.get().getId());
-				 } catch (DAOException e) {
-					 displayer.computerDeletion(false,0);
-				 }
-			} else {
-				displayer.computerDeletion(false, 0);
-			}
-				
+		} else {
+			displayer.computerDeletion(false, 0);
 		}
+	}
+	
+	private void deleteCompany() {
+		
+		int input = displayer.enterId();
+		CompanyService service = new CompanyService();
+		
+		if (input != 0) {
+			Optional<Company> company;
+			company = service.find(input);
+			if (company.isPresent()) {
+				try {
+					service.delete(company.get());
+					System.out.println("Done");
+				} catch (DAOException e) {
+					System.out.println("Failed");
+				}
+			} else {
+				System.out.println("Nothing to delete");
+			}
+		}
+		
 	}
 	
 }

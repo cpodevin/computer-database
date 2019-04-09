@@ -18,7 +18,7 @@ public class CLI {
 	private Scanner scanner;
 
 	public enum Menu {
-		Exit, ComputerList, CompanyList, ComputerDetails, CreateComputer, UpdateComputer, DeleteComputer, InvalidInput
+		Exit, ComputerList, CompanyList, ComputerDetails, CreateComputer, UpdateComputer, DeleteComputer, DeleteCompany, InvalidInput
 	};
 
 	public enum PageMenu {
@@ -40,10 +40,11 @@ public class CLI {
 		System.out.println("Type 4 to create a computer.");
 		System.out.println("Type 5 to update a computer.");
 		System.out.println("Type 6 to delete a computer.");
+		System.out.println("Type 7 to delete a company.");
 
 		try {
 			int input = Integer.parseInt(scanner.nextLine().split(" ")[0]);
-			if (0 <= input && 6 >= input) {
+			if (0 <= input && 7 >= input) {
 				res = Menu.values()[input];
 			} else {
 				logger.warn("Invalid input");

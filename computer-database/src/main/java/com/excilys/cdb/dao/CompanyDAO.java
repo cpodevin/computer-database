@@ -11,6 +11,7 @@ import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.excilys.cdb.exception.DAOException;
 import com.excilys.cdb.model.Company;
 
 public class CompanyDAO {
@@ -18,14 +19,13 @@ public class CompanyDAO {
 	private static final Logger logger = LoggerFactory.getLogger(CompanyDAO.class);
 
 	private static CompanyDAO myInstance = new CompanyDAO(DAOFactory.getInstance());
-	private DAOFactory factory;
 
 	private final String findQuery = "SELECT id,name FROM company WHERE id = ?";
 	private final String listQuery = "SELECT id,name FROM company";
+	private final String deleteQuery = "DELETE FROM company WHERE id = ?";
+	private final String deleteComputersQuery = "DELETE FROM computer WHERE company_id = ?";
 
-	private CompanyDAO(DAOFactory conn) {
-		this.factory = conn;
-	}
+	private CompanyDAO(DAOFactory conn) { }
 
 	public static CompanyDAO getInstance(DAOFactory conn) {
 		if (myInstance == null) {
@@ -34,18 +34,26 @@ public class CompanyDAO {
 		return myInstance;
 	}
 	
-	public boolean create(Company company) {
-		return false;
+	public void create(Company company) { }
+	
+	public void delete(Company company) throws DAOException {
+		try (Connection conn = DataSource.getConn();
+				PreparedStatement statementA = conn.prepareStatement(deleteComputersQuery);
+				PreparedStatement statementB = conn.prepareStatement(deleteQuery)) {
+			statementA.setInt(1, company.getId());
+			statementA.executeUpdate();
+			
+			statementB.setInt(1, company.getId());
+			if (statementB.executeUpdate()!=1) {
+				throw new DAOException("No line found to delete.");
+			}
+			conn.commit();
+		} catch (SQLException e) {
+			throw new DAOException(e);
+		}
 	}
 	
-	public boolean delete(Company company) {
-		
-		return false;
-	}
-	
-	public boolean update(Company company) {
-		return false;
-	}
+	public void update(Company company) { }
 	
 	public Optional<Company> find(int id) {
 		try (Connection conn = DataSource.getConn(); 

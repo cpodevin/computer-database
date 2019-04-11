@@ -10,6 +10,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+
 import com.excilys.cdb.dto.ComputerDTO;
 import com.excilys.cdb.dto.ComputerMapper;
 import com.excilys.cdb.exception.DAOException;
@@ -26,12 +29,19 @@ import com.excilys.cdb.service.ComputerService;
 public class EditComputer extends HttpServlet {
 	private static final long serialVersionUID = 3L;
        
+	ComputerService computerService;
+	CompanyService companyService;
+	ComputerMapper computerMapper;
+	
     /**
      * @see HttpServlet#HttpServlet()
      */
     public EditComputer() {
         super();
-        // TODO Auto-generated constructor stub
+        ApplicationContext context = new ClassPathXmlApplicationContext("applicationContext.xml");
+    	computerService = (ComputerService) context.getBean("computerService");
+    	companyService = (CompanyService) context.getBean("companyService");
+    	computerMapper = (ComputerMapper) context.getBean("computerMapper");
     }
 
 	/**
@@ -39,7 +49,6 @@ public class EditComputer extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
-		ComputerService computerService = new ComputerService();
 		try {
 			int id = Integer.parseInt(request.getParameter("id"));
 			Optional<Computer> computer = computerService.find(id);
@@ -52,7 +61,7 @@ public class EditComputer extends HttpServlet {
 		} catch (NumberFormatException | DAOException e) {
 			request.setAttribute("res", "Error while looking for your computer");
 		}
-		CompanyService companyService = new CompanyService();
+		
 		List<Company> list = companyService.getList();
 		request.setAttribute("list_company", list);
 
@@ -76,11 +85,9 @@ public class EditComputer extends HttpServlet {
 		dto.setIntroduced(introduced);
 		dto.setDiscontinued(discontinued);
 		dto.setCompanyId(Integer.parseInt(companyId));
-		
-		ComputerService service = new ComputerService();
-		ComputerMapper mapper = new ComputerMapper();
+
 		try {
-			service.update(mapper.getComputer(dto));
+			computerService.update(computerMapper.getComputer(dto));
 			request.setAttribute("res", "Success");
 		} catch (DAOException e) {
 			request.setAttribute("res", "DB Error");

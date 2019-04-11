@@ -9,6 +9,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+
 import com.excilys.cdb.dto.ComputerDTO;
 import com.excilys.cdb.dto.ComputerMapper;
 import com.excilys.cdb.exception.DAOException;
@@ -24,19 +27,26 @@ import com.excilys.cdb.service.ComputerService;
 public class AddComputer extends HttpServlet {
 	private static final long serialVersionUID = 2L;
 	
+	ComputerService computerService;
+	CompanyService companyService;
+	ComputerMapper computerMapper;
+	
     /**
      * @see HttpServlet#HttpServlet()
      */
     public AddComputer() {
         super();
+        ApplicationContext context = new ClassPathXmlApplicationContext("applicationContext.xml");
+    	computerService = (ComputerService) context.getBean("computerService");
+    	companyService = (CompanyService) context.getBean("companyService");
+    	computerMapper = (ComputerMapper) context.getBean("computerMapper");
     }
 
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		CompanyService service = new CompanyService();
-		List<Company> list = service.getList();
+		List<Company> list = companyService.getList();
 		request.setAttribute("list", list);
 		
 		getServletContext().getRequestDispatcher("/views/addComputer.jsp").forward(request, response);
@@ -59,10 +69,8 @@ public class AddComputer extends HttpServlet {
 		dto.setDiscontinued(discontinued);
 		dto.setCompanyId(Integer.parseInt(companyId));
 		
-		ComputerService service = new ComputerService();
-		ComputerMapper mapper = new ComputerMapper();
 		try {
-			service.create(mapper.getComputer(dto));
+			computerService.create(computerMapper.getComputer(dto));
 			request.setAttribute("res", "Success");
 		} catch (DAOException e) {
 			request.setAttribute("res", "DB Error");

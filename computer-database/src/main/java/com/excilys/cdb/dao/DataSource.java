@@ -14,6 +14,7 @@ public class DataSource {
 		config.setJdbcUrl("jdbc:mysql://127.0.0.1:3306/computer-database-db?serverTimezone=UTC");
 		config.setUsername("admincdb");
 		config.setPassword("qwerty1234");
+		config.setDriverClassName("com.mysql.cj.jdbc.Driver");
 		config.setConnectionTimeout(4000);
 		config.setAutoCommit(false);
 		ds =  new HikariDataSource(config);

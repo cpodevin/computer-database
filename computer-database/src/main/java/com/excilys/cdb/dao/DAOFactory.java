@@ -55,11 +55,11 @@ public class DAOFactory {
 	}
 
 	public CompanyDAO getCompanyDAO() {
-		return CompanyDAO.getInstance(myInstance);
+		return new CompanyDAO();
 	}
 	
 	public ComputerDAO getComputerDAO() {
-		return ComputerDAO.getInstance(myInstance);
+		return new ComputerDAO();
 	}
 	
 }

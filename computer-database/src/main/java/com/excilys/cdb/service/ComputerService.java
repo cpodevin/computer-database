@@ -4,46 +4,57 @@ package com.excilys.cdb.service;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Service;
+
+import com.excilys.cdb.dao.CompanyDAO;
 import com.excilys.cdb.dao.ComputerDAO;
 import com.excilys.cdb.dao.DAOFactory;
 import com.excilys.cdb.exception.DAOException;
 import com.excilys.cdb.exception.InvalidInputException;
-import com.excilys.cdb.model.Company;
 import com.excilys.cdb.model.Computer;
-
 
 public class ComputerService {
 	
 	public ComputerService() { }
 	
+	private ComputerDAO computerDAO;
+	
+	public ComputerDAO getComputerDAO() {
+		return computerDAO;
+	}
+	public void setComputerDAO(ComputerDAO computerDAO) {
+		this.computerDAO = computerDAO;
+	}
 	public Optional<Computer> find(int id) throws DAOException {
-		return DAOFactory.getInstance().getComputerDAO().find(id);
+		return computerDAO.find(id);
 	}
 	public List<Computer> search(String search, int sort) throws DAOException {
 		try {
-			return DAOFactory.getInstance().getComputerDAO().search(search, ComputerDAO.Sort.values()[sort]);
+			return computerDAO.search(search, ComputerDAO.Sort.values()[sort]);
 		} catch (IndexOutOfBoundsException e) {
-			return DAOFactory.getInstance().getComputerDAO().search(search, ComputerDAO.Sort.None);
+			return computerDAO.search(search, ComputerDAO.Sort.None);
 		}
 	}
 	
 	
 	public List<Computer> getList() throws DAOException {
-		return DAOFactory.getInstance().getComputerDAO().list();
+		return computerDAO.list();
 	}
 	
 	public void create(Computer computer) throws DAOException, InvalidInputException {
 		check(computer);
-		DAOFactory.getInstance().getComputerDAO().create(computer);
+		computerDAO.create(computer);
 	}
 	
 	public void update(Computer computer) throws DAOException, InvalidInputException {
 		check(computer);
-		DAOFactory.getInstance().getComputerDAO().update(computer);
+		computerDAO.update(computer);
 	}
 	
 	public void delete(int id) throws DAOException {
-		DAOFactory.getInstance().getComputerDAO().delete(new Computer(id,""));
+		computerDAO.delete(new Computer(id,""));
 	}
 	
 	

@@ -15,24 +15,15 @@ import com.excilys.cdb.exception.DAOException;
 import com.excilys.cdb.model.Company;
 
 public class CompanyDAO {
+	
+	public CompanyDAO() { }
 
 	private static final Logger logger = LoggerFactory.getLogger(CompanyDAO.class);
-
-	private static CompanyDAO myInstance = new CompanyDAO(DAOFactory.getInstance());
 
 	private final String findQuery = "SELECT id,name FROM company WHERE id = ?";
 	private final String listQuery = "SELECT id,name FROM company";
 	private final String deleteQuery = "DELETE FROM company WHERE id = ?";
 	private final String deleteComputersQuery = "DELETE FROM computer WHERE company_id = ?";
-
-	private CompanyDAO(DAOFactory conn) { }
-
-	public static CompanyDAO getInstance(DAOFactory conn) {
-		if (myInstance == null) {
-			myInstance = new CompanyDAO(conn);
-		}
-		return myInstance;
-	}
 	
 	public void create(Company company) { }
 	

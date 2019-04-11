@@ -17,8 +17,6 @@ import com.excilys.cdb.model.Computer;
 
 public class ComputerDAO {
 	
-	private static ComputerDAO myInstance = null;
-	
 	private final String createQuery = "INSERT INTO computer (name,introduced,discontinued,company_id) VALUES (?,?,?,?)";
 	private final String deleteQuery = "DELETE FROM computer WHERE id = ?";
 	private final String updateQuery = "UPDATE computer SET name = ? , introduced = ? , discontinued = ? , company_id = ? WHERE id = ?";
@@ -26,18 +24,11 @@ public class ComputerDAO {
 	private final String listQuery = "SELECT c.id,c.name,c.introduced,c.discontinued,c.company_id,d.name FROM computer c LEFT JOIN company d ON c.company_id=d.id";
 	private final String searchQuery = "SELECT c.id,c.name,c.introduced,c.discontinued,c.company_id,d.name FROM computer c LEFT JOIN company d ON c.company_id=d.id WHERE c.name LIKE ? OR d.name LIKE ?";
 	
-	private ComputerDAO(DAOFactory conn) { }
-	
+	public ComputerDAO() { }
+
 	public enum Sort {
 		None, NameAsc, NameDesc, IntroducedAsc, IntroducedDesc, DiscontinuedAsc, DiscontinuedDesc, CompanyAsc, CompanyDesc
 	};
-	
-	public static ComputerDAO getInstance(DAOFactory conn) {
-		if (myInstance == null) {
-			myInstance = new ComputerDAO(conn);		
-		}
-		return myInstance;
-	}
 	
 	public void create(Computer computer) throws DAOException {	
 		try (Connection conn = DataSource.getConn(); 

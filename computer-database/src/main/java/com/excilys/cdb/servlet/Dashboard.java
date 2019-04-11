@@ -12,6 +12,13 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import com.excilys.cdb.dto.ComputerDTO;
 import com.excilys.cdb.exception.DAOException;
@@ -25,13 +32,16 @@ import com.excilys.cdb.service.ComputerService;
 @WebServlet("/dashboard")
 public class Dashboard extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-	
+
+	ComputerService computerService;
 
     /**
      * @see HttpServlet#HttpServlet()
      */
     public Dashboard() {
         super();
+        ApplicationContext context = new ClassPathXmlApplicationContext("applicationContext.xml");
+    	computerService = (ComputerService) context.getBean("computerService");
     }
 
 	/**
@@ -47,8 +57,8 @@ public class Dashboard extends HttpServlet {
 	    
 	    
 	    try {
-			ComputerService service = new ComputerService();
-			List<Computer> computerList = service.search(search,sort);
+	    	
+			List<Computer> computerList = computerService.search(search,sort);
 			List<ComputerDTO> computerData = new ArrayList<>();
 			for (Computer computer : computerList) {
 				computerData.add(new ComputerDTO(computer));
@@ -93,13 +103,11 @@ public class Dashboard extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
-		ComputerService service = new ComputerService();
-		
 		String selection = request.getParameter("selection");
 		String[] idList = selection.split(",");
 		try {
 			for (String id : idList) {
-				service.delete(Integer.parseInt(id));
+				computerService.delete(Integer.parseInt(id));
 			}
 		} catch (DAOException e){
 			/* TODO something*/

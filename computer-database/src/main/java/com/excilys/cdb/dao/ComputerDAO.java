@@ -49,6 +49,16 @@ public class ComputerDAO {
 	public void setJdbcTemplate(JdbcTemplate jdbcTemplate) {
 		this.jdbcTemplate = jdbcTemplate;
 	}
+	
+	private ComputerMapper computerMapper;
+
+	public ComputerMapper getComputerMapper() {
+		return computerMapper;
+	}
+
+	public void setComputerMapper(ComputerMapper computerMapper) {
+		this.computerMapper = computerMapper;
+	}
 
 	public enum Sort {
 		None, NameAsc, NameDesc, IntroducedAsc, IntroducedDesc, DiscontinuedAsc, DiscontinuedDesc, CompanyAsc, CompanyDesc
@@ -88,54 +98,19 @@ public class ComputerDAO {
 		}		
 	}
 
-	public void update(Computer computer) throws DAOException {
-		try (Connection conn = dataSource.getConnection(); 
-				PreparedStatement statement = conn.prepareStatement(updateQuery)) {		
-			statement.setString(1, computer.getName());
-			statement.setDate(2, computer.getIntroduced());
-			statement.setDate(3, computer.getDiscontinued());
-			if (!computer.getCompany().isPresent()) {
-				statement.setNull(4, java.sql.Types.INTEGER);
-			} else {
-				statement.setInt(4, computer.getCompany().get().getId());
-			}
-			statement.setInt(5, computer.getId());
-			if (statement.executeUpdate()!=1) {
-				throw new DAOException("No line found to update.");
-			}
-		} catch (SQLException e) {
-			throw new DAOException(e);
-		}		
+	public void update(Computer computer) throws DAOException {	
+		int nbRowAffected = jdbcTemplate.update(updateQuery, computer.getName(), computer.getIntroduced(), computer.getDiscontinued(), computer.getCompany().isPresent() ? computer.getCompany().get().getId() : null, computer.getId());
+		
+		if (nbRowAffected != 1) {
+			throw new DAOException("No line found to update.");
+		}
 	}
 	
 	public Optional<Computer> find(int id) throws DAOException {
-		try (Connection conn = dataSource.getConnection(); 
-				PreparedStatement statement = conn.prepareStatement(findQuery)) {
-			statement.setInt(1, id);
-			ResultSet result = statement.executeQuery();
-			if (result.next()) {
-				return Optional.of(new Computer(result.getInt("c.id"), result.getString("c.name"), result.getDate("c.introduced"), result.getDate("c.discontinued"), result.getInt("c.company_id")!=0 ? Optional.of(new Company(result.getInt("c.company_id"),result.getString("d.name"))) : Optional.empty()));
-			}
-		} catch (SQLException e) {
-			throw new DAOException(e);
-		}
-		return Optional.empty();
+		return Optional.ofNullable(jdbcTemplate.queryForObject(findQuery, computerMapper, id));
 	}
 	
 	public List<Computer> list() throws DAOException {
-		
-//		List<Computer> resList = new ArrayList<>();
-//		
-//		try (Connection conn = dataSource.getConnection(); 
-//				PreparedStatement statement = conn.prepareStatement(listQuery)) {		
-//			ResultSet result = statement.executeQuery();
-//			while (result.next()) {
-//				resList.add(new Computer(result.getInt("c.id"), result.getString("c.name"), result.getDate("c.introduced"), result.getDate("c.discontinued"), result.getInt("c.company_id")!=0 ? Optional.of(new Company(result.getInt("c.company_id"),result.getString("d.name"))) : Optional.empty()));
-//			}
-//		} catch (SQLException e) {
-//			throw new DAOException(e);
-//		}
-//		return resList;
 		return jdbcTemplate.query(listQuery, new ComputerMapper());
 	}
 	
@@ -173,20 +148,7 @@ public class ComputerDAO {
 		default :
 		}
 		
-		return jdbcTemplate.query(query,new String[] {"%" + search + "%", "%" + search + "%"}, new ComputerMapper());
-//		
-//		try (Connection conn = dataSource.getConnection(); 
-//				PreparedStatement statement = conn.prepareStatement(query)) {
-//			statement.setString(1, "%" + search + "%");
-//			statement.setString(2, "%" + search + "%");
-//			ResultSet result = statement.executeQuery();
-//			while (result.next()) {
-//				resList.add(new Computer(result.getInt("c.id"), result.getString("c.name"), result.getDate("c.introduced"), result.getDate("c.discontinued"), result.getInt("c.company_id")!=0 ? Optional.of(new Company(result.getInt("c.company_id"),result.getString("d.name"))) : Optional.empty()));
-//			}
-//		} catch (SQLException e) {
-//			throw new DAOException(e);
-//		}
-//		return resList;
+		return jdbcTemplate.query(query,new String[] {"%" + search + "%", "%" + search + "%"}, computerMapper);
 	}
 
 

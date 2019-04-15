@@ -10,8 +10,10 @@ import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 
+import com.excilys.cdb.dto.CompanyMapper;
 import com.excilys.cdb.exception.DAOException;
 import com.excilys.cdb.model.Company;
 
@@ -30,6 +32,26 @@ public class CompanyDAO {
 	
 	DriverManagerDataSource dataSource;
 	
+	private JdbcTemplate jdbcTemplate;
+	
+	private CompanyMapper companyMapper;
+	
+	public CompanyMapper getCompanyMapper() {
+		return companyMapper;
+	}
+
+	public void setCompanyMapper(CompanyMapper companyMapper) {
+		this.companyMapper = companyMapper;
+	}
+
+	public JdbcTemplate getJdbcTemplate() {
+		return jdbcTemplate;
+	}
+
+	public void setJdbcTemplate(JdbcTemplate jdbcTemplate) {
+		this.jdbcTemplate = jdbcTemplate;
+	}
+
 	public DriverManagerDataSource getDataSource() {
 		return dataSource;
 	}
@@ -60,32 +82,11 @@ public class CompanyDAO {
 	public void update(Company company) { }
 	
 	public Optional<Company> find(int id) {
-		try (Connection conn = dataSource.getConnection(); 
-				PreparedStatement statement = conn.prepareStatement(findQuery)) {			
-			statement.setInt(1, id);
-			ResultSet result = statement.executeQuery();
-			if (result.next()) {
-				return Optional.of(new Company(result.getInt("id"),result.getString("name")));
-			}
-		} catch (SQLException e) {
-			logger.error("DB Error", e);
-		}
-		return Optional.empty();
+		return Optional.ofNullable(jdbcTemplate.queryForObject(findQuery, companyMapper));
 	}
 	
 	public List<Company> list() {
-		List<Company> resList = new ArrayList<>();
-		
-		try (Connection conn = dataSource.getConnection(); 
-				PreparedStatement statement = conn.prepareStatement(listQuery)) {		
-			ResultSet result = statement.executeQuery();
-			while (result.next()) {
-				resList.add(new Company(result.getInt("id"),result.getString("name")));
-			}
-		} catch (SQLException e) {
-			logger.error("DB Error", e);
-		}
-		return resList;
+		return jdbcTemplate.query(listQuery, companyMapper);
 	}
 	
 }

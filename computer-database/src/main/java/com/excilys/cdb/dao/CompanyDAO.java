@@ -10,6 +10,7 @@ import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.jdbc.datasource.DriverManagerDataSource;
 
 import com.excilys.cdb.exception.DAOException;
 import com.excilys.cdb.model.Company;
@@ -27,10 +28,22 @@ public class CompanyDAO {
 	
 	public void create(Company company) { }
 	
+	DriverManagerDataSource dataSource;
+	
+	public DriverManagerDataSource getDataSource() {
+		return dataSource;
+	}
+
+	public void setDataSource(DriverManagerDataSource dataSource) {
+		this.dataSource = dataSource;
+	}
+
+	
 	public void delete(Company company) throws DAOException {
-		try (Connection conn = DataSource.getConn();
+		try (Connection conn = dataSource.getConnection();
 				PreparedStatement statementA = conn.prepareStatement(deleteComputersQuery);
 				PreparedStatement statementB = conn.prepareStatement(deleteQuery)) {
+			conn.setAutoCommit(false);
 			statementA.setInt(1, company.getId());
 			statementA.executeUpdate();
 			
@@ -47,7 +60,7 @@ public class CompanyDAO {
 	public void update(Company company) { }
 	
 	public Optional<Company> find(int id) {
-		try (Connection conn = DataSource.getConn(); 
+		try (Connection conn = dataSource.getConnection(); 
 				PreparedStatement statement = conn.prepareStatement(findQuery)) {			
 			statement.setInt(1, id);
 			ResultSet result = statement.executeQuery();
@@ -63,7 +76,7 @@ public class CompanyDAO {
 	public List<Company> list() {
 		List<Company> resList = new ArrayList<>();
 		
-		try (Connection conn = DataSource.getConn(); 
+		try (Connection conn = dataSource.getConnection(); 
 				PreparedStatement statement = conn.prepareStatement(listQuery)) {		
 			ResultSet result = statement.executeQuery();
 			while (result.next()) {

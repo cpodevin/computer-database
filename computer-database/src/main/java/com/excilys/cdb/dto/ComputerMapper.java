@@ -1,15 +1,16 @@
 package com.excilys.cdb.dto;
 
 import java.sql.Date;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Optional;
+
+import org.springframework.jdbc.core.RowMapper;
 
 import com.excilys.cdb.model.Company;
 import com.excilys.cdb.model.Computer;
-import com.excilys.cdb.service.CompanyService;
 
-public class ComputerMapper {
-		
-	private CompanyService companyService;
+public class ComputerMapper implements RowMapper<Computer> {
 
 	public ComputerMapper() { }
 	
@@ -33,13 +34,10 @@ public class ComputerMapper {
 		
 		return res;
 	}
-	
-	public CompanyService getService() {
-		return companyService;
-	}
 
-	public void setService(CompanyService companyService) {
-		this.companyService = companyService;
+	@Override
+	public Computer mapRow(ResultSet rs, int rowNum) throws SQLException {
+		return new Computer(rs.getInt("c.id"), rs.getString("c.name"), rs.getDate("c.introduced"), rs.getDate("c.discontinued"), rs.getInt("c.company_id")!=0 ? Optional.of(new Company(rs.getInt("c.company_id"),rs.getString("d.name"))) : Optional.empty());
 	}
 
 }

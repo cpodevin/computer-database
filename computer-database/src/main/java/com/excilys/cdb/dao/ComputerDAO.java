@@ -11,6 +11,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.datasource.DriverManagerDataSource;
+
+import com.excilys.cdb.dto.ComputerMapper;
 import com.excilys.cdb.exception.DAOException;
 import com.excilys.cdb.model.Company;
 import com.excilys.cdb.model.Computer;
@@ -26,12 +30,32 @@ public class ComputerDAO {
 	
 	public ComputerDAO() { }
 
+	private DriverManagerDataSource dataSource;
+	
+	public DriverManagerDataSource getDataSource() {
+		return dataSource;
+	}
+
+	public void setDataSource(DriverManagerDataSource dataSource) {
+		this.dataSource = dataSource;
+	}
+	
+	private JdbcTemplate jdbcTemplate;
+	
+	public JdbcTemplate getJdbcTemplate() {
+		return jdbcTemplate;
+	}
+
+	public void setJdbcTemplate(JdbcTemplate jdbcTemplate) {
+		this.jdbcTemplate = jdbcTemplate;
+	}
+
 	public enum Sort {
 		None, NameAsc, NameDesc, IntroducedAsc, IntroducedDesc, DiscontinuedAsc, DiscontinuedDesc, CompanyAsc, CompanyDesc
 	};
 	
 	public void create(Computer computer) throws DAOException {	
-		try (Connection conn = DataSource.getConn(); 
+		try (Connection conn = dataSource.getConnection(); 
 				PreparedStatement statement = conn.prepareStatement(createQuery,Statement.RETURN_GENERATED_KEYS)) {
 			statement.setString(1, computer.getName());
 			statement.setDate(2, computer.getIntroduced());
@@ -46,7 +70,6 @@ public class ComputerDAO {
 			if (result.next()) {
 				computer.setId(result.getInt(1));
 			}
-			conn.commit();
 		} catch (SQLException e) {
 			throw new DAOException(e);
 		}
@@ -54,20 +77,19 @@ public class ComputerDAO {
 	}
 	
 	public void delete(Computer computer) throws DAOException {
-		try (Connection conn = DataSource.getConn(); 
+		try (Connection conn = dataSource.getConnection(); 
 				PreparedStatement statement = conn.prepareStatement(deleteQuery)) {		
 			statement.setInt(1,  computer.getId());
 			if (statement.executeUpdate()!=1) {
 				throw new DAOException("No line found to delete.");
 			}
-			conn.commit();
 		} catch (SQLException e) {
 			throw new DAOException(e);
 		}		
 	}
 
 	public void update(Computer computer) throws DAOException {
-		try (Connection conn = DataSource.getConn(); 
+		try (Connection conn = dataSource.getConnection(); 
 				PreparedStatement statement = conn.prepareStatement(updateQuery)) {		
 			statement.setString(1, computer.getName());
 			statement.setDate(2, computer.getIntroduced());
@@ -81,14 +103,13 @@ public class ComputerDAO {
 			if (statement.executeUpdate()!=1) {
 				throw new DAOException("No line found to update.");
 			}
-			conn.commit();
 		} catch (SQLException e) {
 			throw new DAOException(e);
 		}		
 	}
 	
 	public Optional<Computer> find(int id) throws DAOException {
-		try (Connection conn = DataSource.getConn(); 
+		try (Connection conn = dataSource.getConnection(); 
 				PreparedStatement statement = conn.prepareStatement(findQuery)) {
 			statement.setInt(1, id);
 			ResultSet result = statement.executeQuery();
@@ -103,18 +124,19 @@ public class ComputerDAO {
 	
 	public List<Computer> list() throws DAOException {
 		
-		List<Computer> resList = new ArrayList<>();
-		
-		try (Connection conn = DataSource.getConn(); 
-				PreparedStatement statement = conn.prepareStatement(listQuery)) {		
-			ResultSet result = statement.executeQuery();
-			while (result.next()) {
-				resList.add(new Computer(result.getInt("c.id"), result.getString("c.name"), result.getDate("c.introduced"), result.getDate("c.discontinued"), result.getInt("c.company_id")!=0 ? Optional.of(new Company(result.getInt("c.company_id"),result.getString("d.name"))) : Optional.empty()));
-			}
-		} catch (SQLException e) {
-			throw new DAOException(e);
-		}
-		return resList;
+//		List<Computer> resList = new ArrayList<>();
+//		
+//		try (Connection conn = dataSource.getConnection(); 
+//				PreparedStatement statement = conn.prepareStatement(listQuery)) {		
+//			ResultSet result = statement.executeQuery();
+//			while (result.next()) {
+//				resList.add(new Computer(result.getInt("c.id"), result.getString("c.name"), result.getDate("c.introduced"), result.getDate("c.discontinued"), result.getInt("c.company_id")!=0 ? Optional.of(new Company(result.getInt("c.company_id"),result.getString("d.name"))) : Optional.empty()));
+//			}
+//		} catch (SQLException e) {
+//			throw new DAOException(e);
+//		}
+//		return resList;
+		return jdbcTemplate.query(listQuery, new ComputerMapper());
 	}
 	
 	public List<Computer> search(String search, Sort sort) throws DAOException {
@@ -151,19 +173,22 @@ public class ComputerDAO {
 		default :
 		}
 		
-		try (Connection conn = DataSource.getConn(); 
-				PreparedStatement statement = conn.prepareStatement(query)) {
-			statement.setString(1, "%" + search + "%");
-			statement.setString(2, "%" + search + "%");
-			ResultSet result = statement.executeQuery();
-			while (result.next()) {
-				resList.add(new Computer(result.getInt("c.id"), result.getString("c.name"), result.getDate("c.introduced"), result.getDate("c.discontinued"), result.getInt("c.company_id")!=0 ? Optional.of(new Company(result.getInt("c.company_id"),result.getString("d.name"))) : Optional.empty()));
-			}
-		} catch (SQLException e) {
-			throw new DAOException(e);
-		}
-		return resList;
+		return jdbcTemplate.query(query,new String[] {"%" + search + "%", "%" + search + "%"}, new ComputerMapper());
+//		
+//		try (Connection conn = dataSource.getConnection(); 
+//				PreparedStatement statement = conn.prepareStatement(query)) {
+//			statement.setString(1, "%" + search + "%");
+//			statement.setString(2, "%" + search + "%");
+//			ResultSet result = statement.executeQuery();
+//			while (result.next()) {
+//				resList.add(new Computer(result.getInt("c.id"), result.getString("c.name"), result.getDate("c.introduced"), result.getDate("c.discontinued"), result.getInt("c.company_id")!=0 ? Optional.of(new Company(result.getInt("c.company_id"),result.getString("d.name"))) : Optional.empty()));
+//			}
+//		} catch (SQLException e) {
+//			throw new DAOException(e);
+//		}
+//		return resList;
 	}
+
 
 	
 }

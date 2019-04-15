@@ -17,6 +17,26 @@ public class Controller {
 
 	private CLI displayer;
 	
+	ComputerService computerService;
+	
+	public ComputerService getComputerService() {
+		return computerService;
+	}
+
+	public void setComputerService(ComputerService computerService) {
+		this.computerService = computerService;
+	}
+
+	public CompanyService getCompanyService() {
+		return companyService;
+	}
+
+	public void setCompanyService(CompanyService companyService) {
+		this.companyService = companyService;
+	}
+
+	CompanyService companyService;
+	
 	public Controller() {
 		displayer = new CLI();	
 	}
@@ -34,15 +54,13 @@ public class Controller {
 				break;
 			case ComputerList :
 				try {
-					ComputerService service = new ComputerService();
-					displayer.printComputerList(new Page<Computer>(service.getList()));
+					displayer.printComputerList(new Page<Computer>(computerService.getList()));
 				} catch (DAOException e) {
 					displayer.printComputerList(new Page<Computer>(new ArrayList<Computer>()));
 				}
 				break;
 			case CompanyList :
-				CompanyService service = new CompanyService();
-				displayer.printCompanyList(new Page<Company>(service.getList()));
+				displayer.printCompanyList(new Page<Company>(companyService.getList()));
 				break;
 			case ComputerDetails :
 				details();
@@ -70,12 +88,11 @@ public class Controller {
 	
 	private void details() {
 		int input;
-		ComputerService service = new ComputerService();
 		input = displayer.enterId();
 
 		if (input!=0) {
 			try {
-				displayer.printComputerDetails(service.find(input));
+				displayer.printComputerDetails(computerService.find(input));
 			} catch (DAOException e) {
 				displayer.printComputerDetails(Optional.empty());
 			}
@@ -86,8 +103,6 @@ public class Controller {
 	
 	private void create() {	
 		Optional<Computer> computer = displayer.enterComputer(true);
-		CompanyService companyService = new CompanyService();
-		ComputerService computerService = new ComputerService();
 		
 		if (computer.isPresent()) {
 			Optional<Company> company = companyService.find(displayer.enterCompanyId());
@@ -112,8 +127,6 @@ public class Controller {
 
 	private void update() {	
 		Optional<Computer> computer = displayer.enterComputer(false);
-		CompanyService companyService = new CompanyService();
-		ComputerService computerService = new ComputerService();
 		
 		if (computer.isPresent()) {
 			Optional<Company> company = companyService.find(displayer.enterCompanyId());
@@ -137,12 +150,11 @@ public class Controller {
 	private void delete() {	
 		
 		int input = displayer.enterId();
-		ComputerService service = new ComputerService();
 		
 		if (input != 0) {
 
 			try {
-				service.delete(input);
+				computerService.delete(input);
 				displayer.computerDeletion(true, input);
 			} catch (DAOException e) {
 				displayer.computerDeletion(false,0);
@@ -155,14 +167,13 @@ public class Controller {
 	private void deleteCompany() {
 		
 		int input = displayer.enterId();
-		CompanyService service = new CompanyService();
 		
 		if (input != 0) {
 			Optional<Company> company;
-			company = service.find(input);
+			company = companyService.find(input);
 			if (company.isPresent()) {
 				try {
-					service.delete(company.get());
+					companyService.delete(company.get());
 					System.out.println("Done");
 				} catch (DAOException e) {
 					System.out.println("Failed");

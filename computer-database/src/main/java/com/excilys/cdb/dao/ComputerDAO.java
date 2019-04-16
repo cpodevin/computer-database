@@ -11,8 +11,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 
 import com.excilys.cdb.dto.ComputerMapper;
 import com.excilys.cdb.exception.DAOException;
@@ -27,6 +31,8 @@ public class ComputerDAO {
 	private final String findQuery = "SELECT c.id,c.name,c.introduced,c.discontinued,c.company_id,d.name FROM computer c LEFT JOIN company d ON c.company_id=d.id WHERE c.id = ?";		
 	private final String listQuery = "SELECT c.id,c.name,c.introduced,c.discontinued,c.company_id,d.name FROM computer c LEFT JOIN company d ON c.company_id=d.id";
 	private final String searchQuery = "SELECT c.id,c.name,c.introduced,c.discontinued,c.company_id,d.name FROM computer c LEFT JOIN company d ON c.company_id=d.id WHERE c.name LIKE ? OR d.name LIKE ?";
+	
+	private static final Logger logger = LoggerFactory.getLogger(ComputerDAO.class);
 	
 	public ComputerDAO() { }
 
@@ -65,41 +71,40 @@ public class ComputerDAO {
 	};
 	
 	public void create(Computer computer) throws DAOException {	
-		try (Connection conn = dataSource.getConnection(); 
-				PreparedStatement statement = conn.prepareStatement(createQuery,Statement.RETURN_GENERATED_KEYS)) {
-			statement.setString(1, computer.getName());
-			statement.setDate(2, computer.getIntroduced());
-			statement.setDate(3, computer.getDiscontinued());
-			if (!computer.getCompany().isPresent()) {
-				statement.setNull(4, java.sql.Types.INTEGER);
-			} else {
-				statement.setInt(4, computer.getCompany().get().getId());
-			}
-			statement.executeUpdate();
-			ResultSet result = statement.getGeneratedKeys();
-			if (result.next()) {
-				computer.setId(result.getInt(1));
-			}
-		} catch (SQLException e) {
-			throw new DAOException(e);
-		}
 
+		KeyHolder keyHolder = new GeneratedKeyHolder();
+		int nbRowAffected = jdbcTemplate.update(
+				c -> { PreparedStatement statement = c.prepareStatement(createQuery,Statement.RETURN_GENERATED_KEYS);
+				statement.setString(1, computer.getName());
+				statement.setDate(2, computer.getIntroduced());
+				statement.setDate(3, computer.getDiscontinued());
+				if (!computer.getCompany().isPresent()) {
+					statement.setNull(4, java.sql.Types.INTEGER);
+				} else {
+					statement.setInt(4, computer.getCompany().get().getId());
+				}
+				return statement;
+		}, keyHolder);
+		if (nbRowAffected != 1) {
+			throw new DAOException("No line found to update.");
+		}
+		
+		computer.setId((Integer) keyHolder.getKey());
 	}
 	
 	public void delete(Computer computer) throws DAOException {
-		try (Connection conn = dataSource.getConnection(); 
-				PreparedStatement statement = conn.prepareStatement(deleteQuery)) {		
-			statement.setInt(1,  computer.getId());
-			if (statement.executeUpdate()!=1) {
-				throw new DAOException("No line found to delete.");
-			}
-		} catch (SQLException e) {
-			throw new DAOException(e);
-		}		
+		int nbRowAffected = jdbcTemplate.update(deleteQuery, computer.getId());
+		
+		if (nbRowAffected != 1) {
+			throw new DAOException("No line found to update.");
+		}
 	}
 
 	public void update(Computer computer) throws DAOException {	
-		int nbRowAffected = jdbcTemplate.update(updateQuery, computer.getName(), computer.getIntroduced(), computer.getDiscontinued(), computer.getCompany().isPresent() ? computer.getCompany().get().getId() : null, computer.getId());
+		int nbRowAffected = jdbcTemplate.update(updateQuery, computer.getName(), 
+				computer.getIntroduced(), computer.getDiscontinued(), 
+				computer.getCompany().isPresent() ? computer.getCompany().get().getId() : null,
+				computer.getId());
 		
 		if (nbRowAffected != 1) {
 			throw new DAOException("No line found to update.");
@@ -115,8 +120,6 @@ public class ComputerDAO {
 	}
 	
 	public List<Computer> search(String search, Sort sort) throws DAOException {
-		
-		List<Computer> resList = new ArrayList<>();
 		
 		String query = searchQuery;
 		

@@ -27,7 +27,7 @@ public class ComputerService {
 	public void setComputerDAO(ComputerDAO computerDAO) {
 		this.computerDAO = computerDAO;
 	}
-	public Optional<Computer> find(int id) throws DAOException {
+	public Optional<Computer> find(int id) {
 		return computerDAO.find(id);
 	}
 	public List<Computer> search(String search, int sort) throws DAOException {

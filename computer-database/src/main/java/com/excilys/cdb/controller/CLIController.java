@@ -3,7 +3,6 @@ package com.excilys.cdb.controller;
 import java.util.ArrayList;
 import java.util.Optional;
 
-import com.excilys.cdb.dao.DAOFactory;
 import com.excilys.cdb.exception.DAOException;
 import com.excilys.cdb.exception.InvalidInputException;
 import com.excilys.cdb.model.Company;
@@ -13,7 +12,7 @@ import com.excilys.cdb.service.CompanyService;
 import com.excilys.cdb.service.ComputerService;
 import com.excilys.cdb.vue.CLI;
 
-public class Controller {
+public class CLIController {
 
 	private CLI displayer;
 	
@@ -37,7 +36,7 @@ public class Controller {
 
 	CompanyService companyService;
 	
-	public Controller() {
+	public CLIController() {
 		displayer = new CLI();	
 	}
 	

@@ -58,7 +58,7 @@ public class EditComputer extends HttpServlet {
 			} else {
 				request.setAttribute("res", "Error while looking for your computer");
 			}
-		} catch (NumberFormatException | DAOException e) {
+		} catch (NumberFormatException e) {
 			request.setAttribute("res", "Error while looking for your computer");
 		}
 		

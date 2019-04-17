@@ -1,14 +1,9 @@
 package com.excilys.cdb.dao;
 
 import java.sql.Statement;
-import java.sql.Connection;
+import java.math.BigInteger;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import org.slf4j.Logger;
@@ -20,7 +15,6 @@ import org.springframework.jdbc.support.KeyHolder;
 
 import com.excilys.cdb.dto.ComputerMapper;
 import com.excilys.cdb.exception.DAOException;
-import com.excilys.cdb.model.Company;
 import com.excilys.cdb.model.Computer;
 
 public class ComputerDAO {
@@ -86,17 +80,19 @@ public class ComputerDAO {
 				return statement;
 		}, keyHolder);
 		if (nbRowAffected != 1) {
-			throw new DAOException("No line found to update.");
+			logger.warn("BD error : No line created.");
+			throw new DAOException("No line created.");
 		}
 		
-		computer.setId((Integer) keyHolder.getKey());
+		computer.setId(((BigInteger) keyHolder.getKey()).intValue());
 	}
 	
 	public void delete(Computer computer) throws DAOException {
 		int nbRowAffected = jdbcTemplate.update(deleteQuery, computer.getId());
 		
 		if (nbRowAffected != 1) {
-			throw new DAOException("No line found to update.");
+			logger.warn("BD error : No line found to delete.");
+			throw new DAOException("No line found to delete.");
 		}
 	}
 
@@ -107,11 +103,12 @@ public class ComputerDAO {
 				computer.getId());
 		
 		if (nbRowAffected != 1) {
+			logger.warn("BD error : No line found to update.");
 			throw new DAOException("No line found to update.");
 		}
 	}
 	
-	public Optional<Computer> find(int id) throws DAOException {
+	public Optional<Computer> find(int id) {
 		return Optional.ofNullable(jdbcTemplate.queryForObject(findQuery, computerMapper, id));
 	}
 	

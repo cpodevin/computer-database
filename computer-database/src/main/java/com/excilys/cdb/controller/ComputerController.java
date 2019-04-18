@@ -9,12 +9,16 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.excilys.cdb.dto.ComputerDTO;
+import com.excilys.cdb.dto.ComputerDTOValidator;
 import com.excilys.cdb.dto.ComputerMapper;
 import com.excilys.cdb.exception.DAOException;
 import com.excilys.cdb.exception.InvalidInputException;
@@ -37,15 +41,23 @@ public class ComputerController {
 	
 	private ComputerMapper computerMapper;
 	
-	public ComputerController(ComputerService computerService, CompanyService companyService, ComputerMapper computerMapper) {
+	private ComputerDTOValidator validator;
+	
+	public ComputerController(ComputerService computerService, CompanyService companyService, ComputerMapper computerMapper, ComputerDTOValidator validator) {
 		this.computerService = computerService;
 		this.companyService  =  companyService;
 		this.computerMapper = computerMapper;
+		this.validator = validator;
 	}
 	
 	@ModelAttribute
 	public ComputerDTO initComputerDTO() {
 		return new ComputerDTO();
+}
+	
+	@InitBinder
+	public void dataBinding(WebDataBinder binder) {
+		binder.addValidators(validator);
 }
 	
 	@GetMapping({"/dashboard"})
@@ -116,7 +128,7 @@ public class ComputerController {
 	}
 	
 	@PostMapping({"/addComputer"})
-	public String create(@ModelAttribute("computerDTO") ComputerDTO dto, Model model) {
+	public String create(@Validated @ModelAttribute("computerDTO") ComputerDTO dto, Model model) {
 		try {
 			computerService.create(computerMapper.getComputer(dto));
 			model.addAttribute("res","Success");
@@ -145,7 +157,7 @@ public class ComputerController {
 	}
 	
 	@PostMapping({"/editComputer"})
-	public String edit(@ModelAttribute("computerDTO") ComputerDTO dto, Model model) {
+	public String edit(@Validated @ModelAttribute("computerDTO") ComputerDTO dto, Model model) {
 		try {
 			computerService.update(computerMapper.getComputer(dto));
 			model.addAttribute("res", "Success");

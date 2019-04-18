@@ -1,11 +1,12 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
+<%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <!DOCTYPE html>
 
 <html>
 <head>
-<title>Computer Database</title>
+<title><spring:message code="title"/></title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta charset="utf-8">
 <!-- Bootstrap -->
@@ -16,14 +17,14 @@
 <body>
     <header class="navbar navbar-inverse navbar-fixed-top">
         <div class="container">
-            <a class="navbar-brand" href="./dashboard"> Application - Computer Database </a>
+            <a class="navbar-brand" href="./dashboard"> <spring:message code="appName"/> </a>
         </div>
     </header>
 
     <section id="main">
         <div class="container">
             <h1 id="homeTitle">
-                <c:out value="${nbPage}" /> computers found.
+                <c:out value="${nbPage}" /> &thinsp; <spring:message code="dashboard.computerFound"/>
             </h1>
             <div id="actions" class="form-horizontal">
                 <div class="pull-left">
@@ -35,8 +36,8 @@
                     </form>
                 </div>
                 <div class="pull-right">
-                    <a class="btn btn-success" id="addComputer" href="./addComputer">Add Computer</a> 
-                    <a class="btn btn-default" id="editComputer" href="#" onclick="$.fn.toggleEditMode();">Edit</a>
+                    <a class="btn btn-success" id="addComputer" href="./addComputer"><spring:message code="dashboard.addComputer"/></a> 
+                    <a class="btn btn-default" id="editComputer" href="#" onclick="$.fn.toggleEditMode();"><spring:message code="dashboard.edit"/></a>
                 </div>
             </div>
         </div>
@@ -61,14 +62,14 @@
                             </span>
                         </th>
                         <th>
-                            Computer name
+                            <spring:message code="computerName"/>
                             <span > 
                             	<a href="./dashboard?sort=1&search=${search}"><i class="fas fa-sort-up"></i></a>
                            	 	<a href="./dashboard?sort=2&search=${search}"><i class="fas fa-sort-down"></i></a>
                            	 </span>
                         </th>
                         <th>
-                            Introduced date
+                            <spring:message code="introducedDate"/>
                             <span > 
                             	<a href="./dashboard?sort=3&search=${search}"><i class="fas fa-sort-up"></i></a>
                            	 	<a href="./dashboard?sort=4&search=${search}"><i class="fas fa-sort-down"></i></a>
@@ -76,7 +77,7 @@
                         </th>
                         <!-- Table header for Discontinued Date -->
                         <th>
-                            Discontinued date
+                            <spring:message code="discontinuedDate"/>
                             <span > 
                             	<a href="./dashboard?sort=5&search=${search}"><i class="fas fa-sort-up"></i></a>
                            	 	<a href="./dashboard?sort=6&search=${search}"><i class="fas fa-sort-down"></i></a>
@@ -84,7 +85,7 @@
                         </th>
                         <!-- Table header for Company -->
                         <th>
-                            Company
+                            <spring:message code="company"/>
                             <span > 
                             	<a href="./dashboard?sort=7&search=${search}"><i class="fas fa-sort-up"></i></a>
                            	 	<a href="./dashboard?sort=8&search=${search}"><i class="fas fa-sort-down"></i></a>

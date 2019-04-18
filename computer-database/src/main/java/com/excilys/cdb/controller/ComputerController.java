@@ -8,7 +8,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -40,6 +42,11 @@ public class ComputerController {
 		this.companyService  =  companyService;
 		this.computerMapper = computerMapper;
 	}
+	
+	@ModelAttribute
+	public ComputerDTO initComputerDTO() {
+		return new ComputerDTO();
+}
 	
 	@GetMapping({"/dashboard"})
 	public String list(@RequestParam(value="search", required=false, defaultValue="") String search, 
@@ -82,7 +89,7 @@ public class ComputerController {
 		return "dashboard";
 	}
 	
-	@PostMapping({"/dashboard"})
+	@PostMapping({"/","/dashboard"})
 	public String delete(@RequestParam(value="search", required=false, defaultValue="") String search, 
 			@RequestParam(value="sort", required=false, defaultValue="0") int sort,
 			@RequestParam(value="page", required=false, defaultValue="1") int index,
@@ -104,19 +111,12 @@ public class ComputerController {
 	public String createForm(Model model) {
 		List<Company> list = companyService.getList();
 		model.addAttribute("list", list);
+		model.addAttribute("computerDTO", new ComputerDTO());
 		return "addComputer";
 	}
 	
 	@PostMapping({"/addComputer"})
-	public String create(@RequestParam(value="computerName", required=false, defaultValue="") String computerName,
-			@RequestParam(value="introduced", required=false, defaultValue="") String introduced,
-			@RequestParam(value="discontinued", required=false, defaultValue="") String discontinued,
-			@RequestParam(value="companyId", required=true) int companyId, Model model) {
-		ComputerDTO dto = new ComputerDTO();
-		dto.setName(computerName);
-		dto.setIntroduced(introduced);
-		dto.setDiscontinued(discontinued);
-		dto.setCompanyId(companyId);
+	public String create(@ModelAttribute("computerDTO") ComputerDTO dto, Model model) {
 		try {
 			computerService.create(computerMapper.getComputer(dto));
 			model.addAttribute("res","Success");
@@ -140,21 +140,12 @@ public class ComputerController {
 		}
 		List<Company> list = companyService.getList();
 		model.addAttribute("list_company", list);
+		model.addAttribute("computerDTO", new ComputerDTO());
 		return "editComputer";
 	}
 	
 	@PostMapping({"/editComputer"})
-	public String edit(@RequestParam(value="id", required=true) int id,
-			@RequestParam(value="computerName", required=false, defaultValue="") String computerName,
-			@RequestParam(value="introduced", required=false, defaultValue="") String introduced,
-			@RequestParam(value="discontinued", required=false, defaultValue="") String discontinued,
-			@RequestParam(value="companyId", required=true) int companyId, Model model) {
-		ComputerDTO dto = new ComputerDTO();
-		dto.setId(id);
-		dto.setName(computerName);
-		dto.setIntroduced(introduced);
-		dto.setDiscontinued(discontinued);
-		dto.setCompanyId(companyId);
+	public String edit(@ModelAttribute("computerDTO") ComputerDTO dto, Model model) {
 		try {
 			computerService.update(computerMapper.getComputer(dto));
 			model.addAttribute("res", "Success");
@@ -163,7 +154,7 @@ public class ComputerController {
 		} catch (InvalidInputException e) {
 			model.addAttribute("res", "Error : " + e.getMessage());
 		}
-		return editForm(id, model);
+		return editForm(dto.getId(), model);
 	}
 	
 }

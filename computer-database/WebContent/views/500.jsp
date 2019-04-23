@@ -1,4 +1,8 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <!DOCTYPE html>
+
 <html>
 <head>
 	<title>Computer Database</title>
@@ -11,7 +15,7 @@
 <body>
 	<header class="navbar navbar-inverse navbar-fixed-top">
 		<div class="container">
-			<a class="navbar-brand" href="dashboard.html"> Application - Computer Database </a>
+			<a class="navbar-brand" href="./dashboard"> <spring:message code="appName"/> </a>
 		</div>
 	</header>
 
@@ -21,6 +25,7 @@
 				Error 500: An error has occured!
 				<br/>
 				<!-- stacktrace -->
+				<c:out value="${res}" />
 			</div>
 		</div>
 	</section>

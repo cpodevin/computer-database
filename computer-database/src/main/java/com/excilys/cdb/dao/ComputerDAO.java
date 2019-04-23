@@ -8,6 +8,7 @@ import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -109,7 +110,11 @@ public class ComputerDAO {
 	}
 	
 	public Optional<Computer> find(int id) {
-		return Optional.ofNullable(jdbcTemplate.queryForObject(findQuery, computerMapper, id));
+		try {
+			return Optional.ofNullable(jdbcTemplate.queryForObject(findQuery, computerMapper, id));
+		} catch (IncorrectResultSizeDataAccessException e) {
+			return Optional.empty();
+		}
 	}
 	
 	public List<Computer> list() throws DAOException {

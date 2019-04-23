@@ -90,11 +90,7 @@ public class CLIController {
 		input = displayer.enterId();
 
 		if (input!=0) {
-			try {
-				displayer.printComputerDetails(computerService.find(input));
-			} catch (DAOException e) {
-				displayer.printComputerDetails(Optional.empty());
-			}
+			displayer.printComputerDetails(computerService.find(input));
 		}
 	}
 

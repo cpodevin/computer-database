@@ -78,7 +78,8 @@ public class ComputerController {
 			}
 			displayer = new Page<>(computerData,10);
 		} catch (DAOException e) {
-			return "404";
+			model.addAttribute("res", "Error while looking for your computers");
+			return "500";
 		}
 
 	    displayer.setIndex(index-1);
@@ -114,6 +115,8 @@ public class ComputerController {
 			}
 		} catch (DAOException e){
 			logger.error("DAO Error : ", e);
+			model.addAttribute("res", "Error while deleting your computers");
+			return "500";
 		}
 		return list(search,sort,index,size,model);
 		//return "redirect:/mvc/dashboard";
@@ -149,6 +152,7 @@ public class ComputerController {
 			model.addAttribute("computer", dto);
 		} else {
 			model.addAttribute("res", "Error while looking for your computer");
+			return "500";
 		}
 		List<Company> list = companyService.getList();
 		model.addAttribute("list_company", list);
@@ -167,6 +171,11 @@ public class ComputerController {
 			model.addAttribute("res", "Error : " + e.getMessage());
 		}
 		return editForm(dto.getId(), model);
+	}
+	
+	@GetMapping({"/*"})
+	public String error(Model model) {
+		return "404";
 	}
 	
 }

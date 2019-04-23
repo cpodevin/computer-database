@@ -18,7 +18,13 @@
     <header class="navbar navbar-inverse navbar-fixed-top">
         <div class="container">
             <a class="navbar-brand" href="./dashboard"> <spring:message code="appName"/> </a>
-        </div>
+        <a href="./dashboard?page=${page}&size=${size}&search=${search}&sort=${sort}&lang=fr">
+        <img src="../img/langfr.png" height="30" width="40"/>
+        </a>
+        <a href="./dashboard?page=${page}&size=${size}&search=${search}&sort=${sort}&lang=en">
+        <img src="../img/langen.png" height="30" width="40"/>
+        </a>
+      </div>
     </header>
 
     <section id="main">

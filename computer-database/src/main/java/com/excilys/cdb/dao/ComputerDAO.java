@@ -81,7 +81,7 @@ public class ComputerDAO {
 				return statement;
 		}, keyHolder);
 		if (nbRowAffected != 1) {
-			logger.warn("BD error : No line created.");
+			logger.warn("DB error : No line created.");
 			throw new DAOException("No line created.");
 		}
 		
@@ -92,7 +92,7 @@ public class ComputerDAO {
 		int nbRowAffected = jdbcTemplate.update(deleteQuery, computer.getId());
 		
 		if (nbRowAffected != 1) {
-			logger.warn("BD error : No line found to delete.");
+			logger.warn("DB error : No line found to delete.");
 			throw new DAOException("No line found to delete.");
 		}
 	}
@@ -104,7 +104,7 @@ public class ComputerDAO {
 				computer.getId());
 		
 		if (nbRowAffected != 1) {
-			logger.warn("BD error : No line found to update.");
+			logger.warn("DB error : No line found to update.");
 			throw new DAOException("No line found to update.");
 		}
 	}

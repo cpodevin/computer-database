@@ -10,6 +10,7 @@ import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 
@@ -71,10 +72,12 @@ public class CompanyDAO {
 			
 			statementB.setInt(1, company.getId());
 			if (statementB.executeUpdate()!=1) {
+				logger.warn("Delete Company : No line found to delete.");
 				throw new DAOException("No line found to delete.");
 			}
 			conn.commit();
 		} catch (SQLException e) {
+			logger.warn("DB error : ", e);
 			throw new DAOException(e);
 		}
 	}
@@ -82,7 +85,11 @@ public class CompanyDAO {
 	public void update(Company company) { }
 	
 	public Optional<Company> find(int id) {
-		return Optional.ofNullable(jdbcTemplate.queryForObject(findQuery, companyMapper));
+		try {
+			return Optional.of(jdbcTemplate.queryForObject(findQuery, companyMapper));
+		} catch (IncorrectResultSizeDataAccessException e) {
+			return Optional.empty();
+		}
 	}
 	
 	public List<Company> list() {

@@ -10,12 +10,10 @@ public class DAOException extends Exception {
 	
 	public DAOException(String message) {
 		super(message);
-		logger.warn("DB Error : " + message);
 	}
 	
 	public DAOException(Exception e) {
 		super(e);
-		logger.warn("DB Error : ", e);
 	}
 
 }

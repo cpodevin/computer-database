@@ -18,8 +18,8 @@ public class ComputerDTO {
 		this.name = computer.getName() != null ? computer.getName() : "";
 		this.introduced = computer.getIntroduced() != null ? computer.getIntroduced().toString() : "";
 		this.discontinued = computer.getDiscontinued() != null ? computer.getDiscontinued().toString() : "";
-		this.company = computer.getCompany().isPresent() ? computer.getCompany().get().getName() : "";
-		this.companyId = computer.getCompany().isPresent() ? computer.getCompany().get().getId() : 0 ;
+		this.company = computer.getCompany() != null ? computer.getCompany().getName() : "";
+		this.companyId = computer.getCompany() != null ? computer.getCompany().getId() : 0 ;
 	}
 	
 	public int getId() {

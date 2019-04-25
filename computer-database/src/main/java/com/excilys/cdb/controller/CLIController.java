@@ -101,7 +101,7 @@ public class CLIController {
 		
 		if (computer.isPresent()) {
 			Optional<Company> company = companyService.find(displayer.enterCompanyId());
-			computer.get().setCompany(company);
+			computer.get().setCompany(company.isPresent() ? company.get() : null);
 			
 			try {
 				computerService.create(computer.get());
@@ -125,7 +125,7 @@ public class CLIController {
 		
 		if (computer.isPresent()) {
 			Optional<Company> company = companyService.find(displayer.enterCompanyId());
-			computer.get().setCompany(company);
+			computer.get().setCompany(company.isPresent() ? company.get() : null);
 			
 			try {	
 				computerService.update(computer.get());		

@@ -156,7 +156,7 @@ public class CLI {
 			System.out.println("Discontinuation Date : "
 					+ ((computer.get().getDiscontinued() == null) ? "Unknown" : computer.get().getDiscontinued()));
 			System.out.println("Company Name : "
-					+ ((computer.get().getCompany().isPresent()) ? computer.get().getCompany().get().getName() : "Unknown" ));
+					+ ((computer.get().getCompany() != null) ? computer.get().getCompany().getName() : "Unknown" ));
 		} else {
 			System.out.println("No computer with this number in the database.");
 		}

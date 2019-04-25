@@ -1,9 +1,13 @@
 package com.excilys.cdb.controller;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -27,6 +31,7 @@ import com.excilys.cdb.model.Computer;
 import com.excilys.cdb.model.Page;
 import com.excilys.cdb.service.CompanyService;
 import com.excilys.cdb.service.ComputerService;
+import com.querydsl.jpa.codegen.JPADomainExporter;
 
 
 
@@ -43,11 +48,24 @@ public class ComputerController {
 	
 	private ComputerDTOValidator validator;
 	
-	public ComputerController(ComputerService computerService, CompanyService companyService, ComputerMapper computerMapper, ComputerDTOValidator validator) {
+	private SessionFactory sessionFactory;
+	
+	public ComputerController(ComputerService computerService, CompanyService companyService, ComputerMapper computerMapper, ComputerDTOValidator validator, SessionFactory sessionFactory) {
 		this.computerService = computerService;
 		this.companyService  =  companyService;
 		this.computerMapper = computerMapper;
 		this.validator = validator;
+		this.sessionFactory = sessionFactory;
+		
+		logger.warn("--------------------------------------------------------");
+		Session session = this.sessionFactory.openSession();
+		try {
+			JPADomainExporter domainExporter = new JPADomainExporter(new File("src/main/java"), session.getMetamodel());
+			domainExporter.execute();
+		} catch (IOException e) {
+			logger.warn("++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+			e.printStackTrace();
+		}
 	}
 	
 	@ModelAttribute

@@ -1,11 +1,15 @@
 package com.excilys.cdb.dao;
 
 import java.sql.Statement;
+import java.io.File;
 import java.math.BigInteger;
 import java.sql.PreparedStatement;
 import java.util.List;
 import java.util.Optional;
 
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.cfg.Configuration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
@@ -17,6 +21,11 @@ import org.springframework.jdbc.support.KeyHolder;
 import com.excilys.cdb.dto.ComputerMapper;
 import com.excilys.cdb.exception.DAOException;
 import com.excilys.cdb.model.Computer;
+import com.querydsl.jpa.JPQLQuery;
+import com.querydsl.jpa.codegen.JPADomainExporter;
+import com.querydsl.jpa.hibernate.HibernateQuery;
+import com.querydsl.jpa.impl.JPAQueryFactory;
+import com.excilys.cdb.model.*;
 
 public class ComputerDAO {
 	
@@ -60,7 +69,27 @@ public class ComputerDAO {
 	public void setComputerMapper(ComputerMapper computerMapper) {
 		this.computerMapper = computerMapper;
 	}
+	
+	private SessionFactory sessionFactory;
 
+	public SessionFactory getSessionFactory() {
+		return sessionFactory;
+	}
+
+	public void setSessionFactory(SessionFactory sessionFactory) {
+		this.sessionFactory = sessionFactory;
+	}
+
+	private JPAQueryFactory queryFactory;
+
+	public JPAQueryFactory getQueryFactory() {
+		return queryFactory;
+	}
+
+	public void setQueryFactory(JPAQueryFactory queryFactory) {
+		this.queryFactory = queryFactory;
+	}
+	
 	public enum Sort {
 		None, NameAsc, NameDesc, IntroducedAsc, IntroducedDesc, DiscontinuedAsc, DiscontinuedDesc, CompanyAsc, CompanyDesc
 	};
@@ -73,10 +102,10 @@ public class ComputerDAO {
 				statement.setString(1, computer.getName());
 				statement.setDate(2, computer.getIntroduced());
 				statement.setDate(3, computer.getDiscontinued());
-				if (!computer.getCompany().isPresent()) {
+				if (computer.getCompany() == null) {
 					statement.setNull(4, java.sql.Types.INTEGER);
 				} else {
-					statement.setInt(4, computer.getCompany().get().getId());
+					statement.setInt(4, computer.getCompany().getId());
 				}
 				return statement;
 		}, keyHolder);
@@ -100,7 +129,7 @@ public class ComputerDAO {
 	public void update(Computer computer) throws DAOException {	
 		int nbRowAffected = jdbcTemplate.update(updateQuery, computer.getName(), 
 				computer.getIntroduced(), computer.getDiscontinued(), 
-				computer.getCompany().isPresent() ? computer.getCompany().get().getId() : null,
+				computer.getCompany(),
 				computer.getId());
 		
 		if (nbRowAffected != 1) {
@@ -110,11 +139,30 @@ public class ComputerDAO {
 	}
 	
 	public Optional<Computer> find(int id) {
-		try {
-			return Optional.ofNullable(jdbcTemplate.queryForObject(findQuery, computerMapper, id));
-		} catch (IncorrectResultSizeDataAccessException e) {
-			return Optional.empty();
-		}
+		
+//		Session session = sessionFactory.openSession();
+//		JPQLQuery query = new HibernateQuery(session);
+//		QComputer computer = QComputer.computer;
+//		Computer res = query.from(computer.computer).where(computer.id.eq(id)).uniqueResult(computer.computer);
+//		return Optional.ofNullable(res);
+		
+		QComputer qComputer = QComputer.computer;
+		Computer computer = queryFactory.selectFrom(qComputer).fetchAll().where(qComputer.id.eq(id)).fetchOne();
+		
+		return Optional.ofNullable(computer);
+		
+//		session.beginTransaction();
+//		return Optional.ofNullable(session.get(Computer.class, id));
+		
+//		try {
+//			return Optional.ofNullable(jdbcTemplate.queryForObject(findQuery, computerMapper, id));
+//		} catch (IncorrectResultSizeDataAccessException e) {
+//			return Optional.empty();
+//		}
+		
+		
+//		Session session = 
+		
 	}
 	
 	public List<Computer> list() throws DAOException {
@@ -155,6 +203,7 @@ public class ComputerDAO {
 		
 		return jdbcTemplate.query(query,new String[] {"%" + search + "%", "%" + search + "%"}, computerMapper);
 	}
+
 
 
 	

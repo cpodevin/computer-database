@@ -30,14 +30,14 @@ public class ComputerMapper implements RowMapper<Computer> {
 		} catch (IllegalArgumentException e) {
 			res.setDiscontinued(null);
 		}
-		res.setCompany(dto.getCompanyId()!=0 ? Optional.of(new Company(dto.getCompanyId(),dto.getCompany())) : Optional.empty());
+		res.setCompany(dto.getCompanyId()!=0 ? new Company(dto.getCompanyId(),dto.getCompany()) : null);
 		
 		return res;
 	}
 
 	@Override
 	public Computer mapRow(ResultSet rs, int rowNum) throws SQLException {
-		return new Computer(rs.getInt("c.id"), rs.getString("c.name"), rs.getDate("c.introduced"), rs.getDate("c.discontinued"), rs.getInt("c.company_id")!=0 ? Optional.of(new Company(rs.getInt("c.company_id"),rs.getString("d.name"))) : Optional.empty());
+		return new Computer(rs.getInt("c.id"), rs.getString("c.name"), rs.getDate("c.introduced"), rs.getDate("c.discontinued"), rs.getInt("c.company_id")!=0 ? new Company(rs.getInt("c.company_id"),rs.getString("d.name")) : null);
 	}
 
 }

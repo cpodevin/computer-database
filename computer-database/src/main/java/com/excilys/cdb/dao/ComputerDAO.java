@@ -4,23 +4,32 @@ import java.sql.Statement;
 import java.io.File;
 import java.math.BigInteger;
 import java.sql.PreparedStatement;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import javax.persistence.EntityManager;
+import javax.persistence.Persistence;
+import javax.transaction.Transactional;
+
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
 import org.hibernate.cfg.Configuration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import com.excilys.cdb.dto.ComputerMapper;
 import com.excilys.cdb.exception.DAOException;
 import com.excilys.cdb.model.Computer;
+import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.jpa.JPQLQuery;
 import com.querydsl.jpa.codegen.JPADomainExporter;
 import com.querydsl.jpa.hibernate.HibernateQuery;
@@ -90,31 +99,47 @@ public class ComputerDAO {
 		this.queryFactory = queryFactory;
 	}
 	
+	private DataSourceTransactionManager transactionManager;
+	
+	public DataSourceTransactionManager getTransactionManager() {
+		return transactionManager;
+	}
+
+	public void setTransactionManager(DataSourceTransactionManager transactionManager) {
+		this.transactionManager = transactionManager;
+	}
+
+
 	public enum Sort {
 		None, NameAsc, NameDesc, IntroducedAsc, IntroducedDesc, DiscontinuedAsc, DiscontinuedDesc, CompanyAsc, CompanyDesc
 	};
 	
 	public void create(Computer computer) throws DAOException {	
 
-		KeyHolder keyHolder = new GeneratedKeyHolder();
-		int nbRowAffected = jdbcTemplate.update(
-				c -> { PreparedStatement statement = c.prepareStatement(createQuery,Statement.RETURN_GENERATED_KEYS);
-				statement.setString(1, computer.getName());
-				statement.setDate(2, computer.getIntroduced());
-				statement.setDate(3, computer.getDiscontinued());
-				if (computer.getCompany() == null) {
-					statement.setNull(4, java.sql.Types.INTEGER);
-				} else {
-					statement.setInt(4, computer.getCompany().getId());
-				}
-				return statement;
-		}, keyHolder);
-		if (nbRowAffected != 1) {
-			logger.warn("DB error : No line created.");
-			throw new DAOException("No line created.");
-		}
+//		KeyHolder keyHolder = new GeneratedKeyHolder();
+//		int nbRowAffected = jdbcTemplate.update(
+//				c -> { PreparedStatement statement = c.prepareStatement(createQuery,Statement.RETURN_GENERATED_KEYS);
+//				statement.setString(1, computer.getName());
+//				statement.setDate(2, computer.getIntroduced());
+//				statement.setDate(3, computer.getDiscontinued());
+//				if (computer.getCompany() == null) {
+//					statement.setNull(4, java.sql.Types.INTEGER);
+//				} else {
+//					statement.setInt(4, computer.getCompany().getId());
+//				}
+//				return statement;
+//		}, keyHolder);
+//		if (nbRowAffected != 1) {
+//			logger.warn("DB error : No line created.");
+//			throw new DAOException("No line created.");
+//		}
+//		computer.setId(((BigInteger) keyHolder.getKey()).intValue());
 		
-		computer.setId(((BigInteger) keyHolder.getKey()).intValue());
+		Session session = sessionFactory.openSession();
+		session.save(computer);
+		session.close();
+		
+
 	}
 	
 	public void delete(Computer computer) throws DAOException {
@@ -127,84 +152,71 @@ public class ComputerDAO {
 	}
 
 	public void update(Computer computer) throws DAOException {	
-		int nbRowAffected = jdbcTemplate.update(updateQuery, computer.getName(), 
-				computer.getIntroduced(), computer.getDiscontinued(), 
-				computer.getCompany(),
-				computer.getId());
+//		int nbRowAffected = jdbcTemplate.update(updateQuery, computer.getName(), 
+//				computer.getIntroduced(), computer.getDiscontinued(), 
+//				computer.getCompany(),
+//				computer.getId());
+//		
+//		if (nbRowAffected != 1) {
+//			logger.warn("DB error : No line found to update.");
+//			throw new DAOException("No line found to update.");
+//		}
 		
-		if (nbRowAffected != 1) {
+		QComputer qComputer = QComputer.computer;
+		if (queryFactory.update(qComputer).where(qComputer.id.eq(computer.getId())).set(qComputer.name, computer.getName())
+		.set(qComputer.introduced, computer.getIntroduced()).set(qComputer.discontinued,  computer.getDiscontinued()).execute() != 1) {
 			logger.warn("DB error : No line found to update.");
 			throw new DAOException("No line found to update.");
-		}
+		}		
 	}
 	
 	public Optional<Computer> find(int id) {
-		
-//		Session session = sessionFactory.openSession();
-//		JPQLQuery query = new HibernateQuery(session);
-//		QComputer computer = QComputer.computer;
-//		Computer res = query.from(computer.computer).where(computer.id.eq(id)).uniqueResult(computer.computer);
-//		return Optional.ofNullable(res);
-		
+	
 		QComputer qComputer = QComputer.computer;
 		Computer computer = queryFactory.selectFrom(qComputer).fetchAll().where(qComputer.id.eq(id)).fetchOne();
 		
 		return Optional.ofNullable(computer);
-		
-//		session.beginTransaction();
-//		return Optional.ofNullable(session.get(Computer.class, id));
-		
-//		try {
-//			return Optional.ofNullable(jdbcTemplate.queryForObject(findQuery, computerMapper, id));
-//		} catch (IncorrectResultSizeDataAccessException e) {
-//			return Optional.empty();
-//		}
-		
-		
-//		Session session = 
-		
+
 	}
 	
 	public List<Computer> list() throws DAOException {
-		return jdbcTemplate.query(listQuery, new ComputerMapper());
+		
+		QComputer qComputer = QComputer.computer;
+		List<Computer> computers = queryFactory.selectFrom(qComputer).fetchAll().fetch();
+		
+		return computers;
 	}
 	
 	public List<Computer> search(String search, Sort sort) throws DAOException {
 		
-		String query = searchQuery;
+		QComputer qComputer = QComputer.computer;
+		List<Computer> computers = queryFactory.selectFrom(qComputer).fetchAll().where(qComputer.name.like("%" + search + "%")).orderBy(getOrder(sort)).fetch();
 		
-		switch (sort) {
-		case NameAsc :
-			query += " ORDER BY CASE WHEN c.name IS null THEN 1 ELSE 0 END, c.name";
-			break;
-		case NameDesc :
-			query += " ORDER BY c.name DESC";
-			break;
-		case IntroducedAsc :
-			query += " ORDER BY CASE WHEN c.introduced IS null THEN 1 ELSE 0 END, c.introduced";
-			break;
-		case IntroducedDesc :
-			query += " ORDER BY c.introduced DESC";
-			break;
-		case DiscontinuedAsc :
-			query += " ORDER BY CASE WHEN c.discontinued IS null THEN 1 ELSE 0 END, c.discontinued";
-			break;
-		case DiscontinuedDesc :
-			query += " ORDER BY c.discontinued DESC";
-			break;	
-		case CompanyAsc :
-			query += " ORDER BY CASE WHEN d.name IS null THEN 1 ELSE 0 END, d.name";
-			break;
-		case CompanyDesc :
-			query += " ORDER BY d.name DESC";
-			break;
-		default :
-		}
-		
-		return jdbcTemplate.query(query,new String[] {"%" + search + "%", "%" + search + "%"}, computerMapper);
+		return computers;
 	}
 
 
-
+	private OrderSpecifier<?> getOrder(Sort sort) {
+		switch (sort) {
+		case NameAsc :
+			return QComputer.computer.name.asc();
+		case NameDesc :
+			return QComputer.computer.name.desc();
+		case IntroducedAsc :
+			return QComputer.computer.introduced.asc().nullsLast();
+		case IntroducedDesc :
+			return QComputer.computer.introduced.desc().nullsLast();
+		case DiscontinuedAsc :
+			return QComputer.computer.discontinued.asc().nullsLast();
+		case DiscontinuedDesc :
+			return QComputer.computer.discontinued.desc().nullsLast();
+		case CompanyAsc :
+			return QComputer.computer.company.name.asc().nullsLast();
+		case CompanyDesc :
+			return QComputer.computer.company.name.desc().nullsLast();
+		default :
+			return QComputer.computer.id.asc();
+		}
+	}
 	
 }

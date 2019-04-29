@@ -17,6 +17,10 @@ import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import com.excilys.cdb.dto.CompanyMapper;
 import com.excilys.cdb.exception.DAOException;
 import com.excilys.cdb.model.Company;
+import com.excilys.cdb.model.Computer;
+import com.excilys.cdb.model.QCompany;
+import com.excilys.cdb.model.QComputer;
+import com.querydsl.jpa.impl.JPAQueryFactory;
 
 public class CompanyDAO {
 	
@@ -29,7 +33,7 @@ public class CompanyDAO {
 	private final String deleteQuery = "DELETE FROM company WHERE id = ?";
 	private final String deleteComputersQuery = "DELETE FROM computer WHERE company_id = ?";
 	
-	public void create(Company company) { }
+
 	
 	DriverManagerDataSource dataSource;
 	
@@ -61,6 +65,17 @@ public class CompanyDAO {
 		this.dataSource = dataSource;
 	}
 
+	private JPAQueryFactory queryFactory;
+
+	public JPAQueryFactory getQueryFactory() {
+		return queryFactory;
+	}
+
+	public void setQueryFactory(JPAQueryFactory queryFactory) {
+		this.queryFactory = queryFactory;
+	}
+
+	public void create(Company company) { }
 	
 	public void delete(Company company) throws DAOException {
 		try (Connection conn = dataSource.getConnection();
@@ -85,15 +100,22 @@ public class CompanyDAO {
 	public void update(Company company) { }
 	
 	public Optional<Company> find(int id) {
-		try {
-			return Optional.of(jdbcTemplate.queryForObject(findQuery, companyMapper));
-		} catch (IncorrectResultSizeDataAccessException e) {
-			return Optional.empty();
-		}
+//		try {
+//			return Optional.of(jdbcTemplate.queryForObject(findQuery, companyMapper));
+//		} catch (IncorrectResultSizeDataAccessException e) {
+//			return Optional.empty();
+//		}
+		
+		QCompany qCompany = QCompany.company;
+		Company company = queryFactory.selectFrom(qCompany).fetchAll().where(qCompany.id.eq(id)).fetchOne();
+		
+		return Optional.ofNullable(company);
+
+		
 	}
 	
 	public List<Company> list() {
-		return jdbcTemplate.query(listQuery, companyMapper);
+		return queryFactory.selectFrom(QCompany.company).fetchAll().fetch();
 	}
 	
 }

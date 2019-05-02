@@ -26,6 +26,7 @@
 
 # Maven Files #
 /target/
+*/target/
 .checkstyle
 
 # Resources Files #

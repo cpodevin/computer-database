@@ -139,16 +139,19 @@ public class ComputerDAO {
 		session.save(computer);
 		session.close();
 		
-
 	}
 	
 	public void delete(Computer computer) throws DAOException {
-		int nbRowAffected = jdbcTemplate.update(deleteQuery, computer.getId());
+//		int nbRowAffected = jdbcTemplate.update(deleteQuery, computer.getId());
 		
-		if (nbRowAffected != 1) {
-			logger.warn("DB error : No line found to delete.");
-			throw new DAOException("No line found to delete.");
-		}
+		QComputer qComputer = QComputer.computer;
+		queryFactory.delete(qComputer).where(qComputer.id.eq(computer.getId())).execute();
+
+		
+//		if (nbRowAffected != 1) {
+//			logger.warn("DB error : No line found to delete.");
+//			throw new DAOException("No line found to delete.");
+//		}
 	}
 
 	public void update(Computer computer) throws DAOException {	
@@ -162,12 +165,17 @@ public class ComputerDAO {
 //			throw new DAOException("No line found to update.");
 //		}
 		
-		QComputer qComputer = QComputer.computer;
-		if (queryFactory.update(qComputer).where(qComputer.id.eq(computer.getId())).set(qComputer.name, computer.getName())
-		.set(qComputer.introduced, computer.getIntroduced()).set(qComputer.discontinued,  computer.getDiscontinued()).execute() != 1) {
-			logger.warn("DB error : No line found to update.");
-			throw new DAOException("No line found to update.");
-		}		
+//		QComputer qComputer = QComputer.computer;
+//		if (queryFactory.update(qComputer).where(qComputer.id.eq(computer.getId())).set(qComputer.name, computer.getName())
+//		.set(qComputer.introduced, computer.getIntroduced()).set(qComputer.discontinued,  computer.getDiscontinued()).execute() != 1) {
+//			logger.warn("DB error : No line found to update.");
+//			throw new DAOException("No line found to update.");
+//		}		
+		
+		Session session = sessionFactory.openSession();
+		session.save(computer);
+		session.close();
+		
 	}
 	
 	public Optional<Computer> find(int id) {

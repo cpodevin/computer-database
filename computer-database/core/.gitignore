@@ -25,7 +25,6 @@
 .settings/*
 
 # Maven Files #
-/target/
 .checkstyle
 
 # Resources Files #

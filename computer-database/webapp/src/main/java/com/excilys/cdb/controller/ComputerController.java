@@ -78,7 +78,7 @@ public class ComputerController {
 		binder.addValidators(validator);
 }
 	
-	@GetMapping({"/dashboard","/"})
+	@GetMapping({"/dashboard"})
 	public String list(@RequestParam(value="search", required=false, defaultValue="") String search, 
 			@RequestParam(value="sort", required=false, defaultValue="0") int sort,
 			@RequestParam(value="page", required=false, defaultValue="1") int index,
@@ -120,7 +120,7 @@ public class ComputerController {
 		return "dashboard";
 	}
 	
-	@PostMapping({"/","/dashboard"})
+	@PostMapping({"/dashboard"})
 	public String delete(@RequestParam(value="search", required=false, defaultValue="") String search, 
 			@RequestParam(value="sort", required=false, defaultValue="0") int sort,
 			@RequestParam(value="page", required=false, defaultValue="1") int index,
@@ -189,17 +189,6 @@ public class ComputerController {
 			model.addAttribute("res", "Error : " + e.getMessage());
 		}
 		return editForm(dto.getId(), model);
-	}
-	
-	@GetMapping({"/login"})
-	public String login(Model model) {
-		return "login";
-	}
-	
-	
-	@GetMapping({"/*"})
-	public String error(Model model) {
-		return "404";
 	}
 	
 }

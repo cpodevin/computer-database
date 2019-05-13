@@ -29,8 +29,10 @@ import com.excilys.cdb.exception.InvalidInputException;
 import com.excilys.cdb.model.Company;
 import com.excilys.cdb.model.Computer;
 import com.excilys.cdb.model.Page;
+import com.excilys.cdb.model.User;
 import com.excilys.cdb.service.CompanyService;
 import com.excilys.cdb.service.ComputerService;
+import com.excilys.cdb.service.UserService;
 import com.querydsl.jpa.codegen.JPADomainExporter;
 
 
@@ -50,12 +52,15 @@ public class ComputerController {
 	
 	private SessionFactory sessionFactory;
 	
-	public ComputerController(ComputerService computerService, CompanyService companyService, ComputerMapper computerMapper, ComputerDTOValidator validator, SessionFactory sessionFactory) {
+	private UserService userService;
+	
+	public ComputerController(ComputerService computerService, CompanyService companyService, ComputerMapper computerMapper, ComputerDTOValidator validator, SessionFactory sessionFactory, UserService userService) {
 		this.computerService = computerService;
 		this.companyService  =  companyService;
 		this.computerMapper = computerMapper;
 		this.validator = validator;
 		this.sessionFactory = sessionFactory;
+		this.userService = userService;
 		
 		logger.warn("--------------------------------------------------------");
 		Session session = this.sessionFactory.openSession();
@@ -190,5 +195,32 @@ public class ComputerController {
 		}
 		return editForm(dto.getId(), model);
 	}
+	
+	@GetMapping({"/create"})
+	public String createGet(Model model) {
+		return "create";
+	}
+	
+	@PostMapping({"/create"})
+	public String createPost(@RequestParam(value="username", required=true, defaultValue="") String username, 
+							 @RequestParam(value="password", required=true, defaultValue="") String password, Model model) {
+		
+		userService.addUser(new User(username, password, true), "ROLE_USER");
+		
+		return "redirect:/mvc/dashboard";
+	}
+
+	@PostMapping("/auth")
+	public String auth(@RequestParam(value="username", required=true, defaultValue="") String username, 
+			@RequestParam(value="password", required=true, defaultValue="") String password) {
+		logger.error("Credentials : "+username+ " "+password);
+		return "redirect:/mvc/dashboard";
+	}
+	
+	@GetMapping({"/*"})
+	public String error(Model model) {
+		return "404";
+	}
+	
 	
 }

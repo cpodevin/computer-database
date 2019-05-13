@@ -7,6 +7,7 @@ import org.springframework.security.core.userdetails.User.UserBuilder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import com.excilys.cdb.dao.UserDAO;
+import com.excilys.cdb.model.Authority;
 import com.excilys.cdb.model.User;
 
 public class UserService implements UserDetailsService{
@@ -38,7 +39,10 @@ public class UserService implements UserDetailsService{
 	}
 	
 	public void addUser(User user, String role) {
-		user.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
+//		user.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
+		userDAO.addUser(user);
+		Authority authority = new Authority(user, role);
+		userDAO.addAuthority(authority);
 	}
 	
 }

@@ -1,10 +1,17 @@
 package com.excilys.cdb.model;
 
 public class Authority {
-
+	
 	private int id;
 	private User username;
 	private String authority;
+	
+	public Authority() {}
+	
+	public Authority(User username, String authority) {
+		this.username = username;
+		this.authority = authority;
+	}
 	
 	public int getId() {
 		return id;
